@@ -10,10 +10,9 @@ interface CoupletDisplayProps {
 const fontFamilyMap: Record<FontFamily, string> = {
   default: "'STKaiti', 'KaiTi', 'SimSun', serif",
   zhengqing: "'ZhengQing', 'STKaiti', 'KaiTi', serif",
-  zhenzong: "'ZhenZong', 'STKaiti', 'KaiTi', serif",
-  yingzhui: "'YingZhui', 'STKaiti', 'KaiTi', serif",
-  yishan: "'YiShan', 'STKaiti', 'KaiTi', serif",
-  aoyagi: "'Aoyagi', 'STKaiti', 'KaiTi', serif",
+  liujianmaocao: "'LiuJianMaoCao', 'STKaiti', 'KaiTi', serif",
+  mashanzheng: "'MaShanZheng', 'STKaiti', 'KaiTi', serif",
+  zhimangxing: "'ZhiMangXing', 'STKaiti', 'KaiTi', serif",
 };
 
 export default function CoupletDisplay({ couplet, fontFamily = "default" }: CoupletDisplayProps) {

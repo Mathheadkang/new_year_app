@@ -19,10 +19,9 @@ const positions: { value: HidePosition; label: string; desc: string }[] = [
 const fonts: { value: FontFamily; label: string }[] = [
   { value: "default", label: "系统楷体" },
   { value: "zhengqing", label: "正卿南北朝公牍松体" },
-  { value: "zhenzong", label: "真宗圣殿楷书" },
-  { value: "yingzhui", label: "颖追行书" },
-  { value: "yishan", label: "一山碑篆体" },
-  { value: "aoyagi", label: "青柳隷书" },
+  { value: "liujianmaocao", label: "刘建毛草" },
+  { value: "mashanzheng", label: "马善政楷书" },
+  { value: "zhimangxing", label: "志莽行书" },
 ];
 
 export default function CoupletForm({ onGenerate, loading, onFontChange, selectedFont }: CoupletFormProps) {

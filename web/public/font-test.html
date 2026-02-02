@@ -8,28 +8,45 @@
         @font-face {
             font-family: 'ZhengQing';
             src: url('/fonts/ZhengQingKeNanBeiCiGongPuSongTi-2.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
+        
         @font-face {
-            font-family: 'ZhenZong';
-            src: url('/fonts/ZhenZongShengDianKaiShu-2.ttf') format('truetype');
+            font-family: 'LiuJianMaoCao';
+            src: url('/fonts/LiuJianMaoCao-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
+        
         @font-face {
-            font-family: 'YingZhui';
-            src: url('/fonts/YingZhuiXingShu-2.ttf') format('truetype');
+            font-family: 'MaShanZheng';
+            src: url('/fonts/MaShanZheng-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
+        
         @font-face {
-            font-family: 'YiShan';
-            src: url('/fonts/YiShanBeiZhuanTi.ttf') format('truetype');
-        }
-        @font-face {
-            font-family: 'Aoyagi';
-            src: url('/fonts/aoyagireisyosimo-ttf-2-01-2.ttf') format('truetype');
+            font-family: 'ZhiMangXing';
+            src: url('/fonts/ZhiMangXing-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
         
         body {
             padding: 20px;
             background: #1a1a1a;
             color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        
+        h1 {
+            color: #fbbf24;
+            margin-bottom: 30px;
         }
         
         .test {
@@ -37,77 +54,151 @@
             padding: 20px;
             background: #2a2a2a;
             border-radius: 8px;
+            border: 1px solid #444;
         }
         
         .font-name {
             color: #fbbf24;
             margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .file-name {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 10px;
         }
         
         .sample {
-            font-size: 32px;
-            line-height: 1.6;
+            font-size: 36px;
+            line-height: 1.8;
+            font-weight: normal;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        .status.loaded {
+            background: #065f46;
+            color: #10b981;
+        }
+        
+        .status.error {
+            background: #7f1d1d;
+            color: #f87171;
         }
     </style>
 </head>
 <body>
     <h1>字体加载测试</h1>
+    <p style="color: #888; margin-bottom: 30px;">打开浏览器开发者工具 (F12) 查看 Network 标签，筛选 Font 类型以查看字体文件加载情况</p>
     
     <div class="test">
         <div class="font-name">系统楷体（默认）</div>
-        <div class="sample" style="font-family: 'STKaiti', 'KaiTi', serif;">
+        <div class="file-name">系统内置字体</div>
+        <div class="sample" style="font-family: 'STKaiti', 'KaiTi', 'SimSun', serif;">
             春节快乐 福满人间 骏马奔腾 万事如意
         </div>
     </div>
     
-    <div class="test">
+    <div class="test" id="zhengqing-test">
         <div class="font-name">正卿南北朝公牍松体</div>
-        <div class="sample" style="font-family: 'ZhengQing', serif;">
+        <div class="file-name">ZhengQingKeNanBeiCiGongPuSongTi-2.ttf</div>
+        <div class="sample" style="font-family: 'ZhengQing', 'STKaiti', serif;">
             春节快乐 福满人间 骏马奔腾 万事如意
         </div>
+        <div class="status" id="zhengqing-status">检测中...</div>
     </div>
     
-    <div class="test">
-        <div class="font-name">真宗圣典楷书</div>
-        <div class="sample" style="font-family: 'ZhenZong', serif;">
+    <div class="test" id="liujian-test">
+        <div class="font-name">刘建毛草</div>
+        <div class="file-name">LiuJianMaoCao-Regular.ttf</div>
+        <div class="sample" style="font-family: 'LiuJianMaoCao', 'STKaiti', serif;">
             春节快乐 福满人间 骏马奔腾 万事如意
         </div>
+        <div class="status" id="liujian-status">检测中...</div>
     </div>
     
-    <div class="test">
-        <div class="font-name">颖追行书</div>
-        <div class="sample" style="font-family: 'YingZhui', serif;">
+    <div class="test" id="mashan-test">
+        <div class="font-name">马善政楷书</div>
+        <div class="file-name">MaShanZheng-Regular.ttf</div>
+        <div class="sample" style="font-family: 'MaShanZheng', 'STKaiti', serif;">
             春节快乐 福满人间 骏马奔腾 万事如意
         </div>
+        <div class="status" id="mashan-status">检测中...</div>
     </div>
     
-    <div class="test">
-        <div class="font-name">一山碑篆体</div>
-        <div class="sample" style="font-family: 'YiShan', serif;">
+    <div class="test" id="zhimang-test">
+        <div class="font-name">志莽行书</div>
+        <div class="file-name">ZhiMangXing-Regular.ttf</div>
+        <div class="sample" style="font-family: 'ZhiMangXing', 'STKaiti', serif;">
             春节快乐 福满人间 骏马奔腾 万事如意
         </div>
-    </div>
-    
-    <div class="test">
-        <div class="font-name">青柳隷书</div>
-        <div class="sample" style="font-family: 'Aoyagi', serif;">
-            春节快乐 福满人间 骏马奔腾 万事如意
-        </div>
+        <div class="status" id="zhimang-status">检测中...</div>
     </div>
     
     <script>
+        console.log('=== 字体加载测试开始 ===');
+        
         // 检测字体是否加载
+        const fonts = [
+            { family: 'ZhengQing', id: 'zhengqing' },
+            { family: 'LiuJianMaoCao', id: 'liujian' },
+            { family: 'MaShanZheng', id: 'mashan' },
+            { family: 'ZhiMangXing', id: 'zhimang' }
+        ];
+        
+        async function checkFont(fontFamily, id) {
+            try {
+                await document.fonts.load(`16px "${fontFamily}"`);
+                const statusEl = document.getElementById(`${id}-status`);
+                const loaded = document.fonts.check(`16px "${fontFamily}"`);
+                
+                if (loaded) {
+                    statusEl.textContent = '✓ 已加载';
+                    statusEl.className = 'status loaded';
+                    console.log(`✓ ${fontFamily} - 加载成功`);
+                } else {
+                    statusEl.textContent = '✗ 加载失败';
+                    statusEl.className = 'status error';
+                    console.error(`✗ ${fontFamily} - 加载失败`);
+                }
+            } catch (error) {
+                const statusEl = document.getElementById(`${id}-status`);
+                statusEl.textContent = '✗ 加载错误';
+                statusEl.className = 'status error';
+                console.error(`✗ ${fontFamily} - 错误:`, error);
+            }
+        }
+        
+        // 等待所有字体加载
         document.fonts.ready.then(() => {
-            console.log('所有字体已加载完成');
+            console.log('=== Document Fonts Ready ===');
+            console.log(`共加载 ${document.fonts.size} 个字体`);
+            
             document.fonts.forEach(font => {
-                console.log(`✓ ${font.family} - ${font.status}`);
+                console.log(`字体: ${font.family} | 状态: ${font.status}`);
+            });
+            
+            // 检查每个自定义字体
+            fonts.forEach(font => {
+                checkFont(font.family, font.id);
             });
         });
         
-        // 监听字体加载失败
-        document.fonts.addEventListener('loadingerror', (event) => {
-            console.error('字体加载失败:', event);
-        });
+        // 单独加载测试
+        setTimeout(() => {
+            console.log('=== 3秒后再次检测 ===');
+            fonts.forEach(font => {
+                checkFont(font.family, font.id);
+            });
+        }, 3000);
     </script>
 </body>
 </html>

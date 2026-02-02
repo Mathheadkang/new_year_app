@@ -1,6 +1,6 @@
 export type HidePosition = "head" | "middle" | "tail";
 
-export type FontFamily = "default" | "zhengqing" | "zhenzong" | "yingzhui" | "yishan" | "aoyagi";
+export type FontFamily = "default" | "zhengqing" | "liujianmaocao" | "mashanzheng" | "zhimangxing";
 
 export interface GenerateRequest {
   name: string;
