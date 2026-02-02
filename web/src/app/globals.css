@@ -32,3 +32,28 @@
   font-style: normal;
   font-display: swap;
 }
+
+/* 背景图片样式 */
+.bg-pattern {
+  background-image: url('/background2.jpg');
+  background-size: 120% 110%;
+  background-position: 55% 50%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* 移动端适配 - 小屏幕使用纯色背景 */
+@media (max-width: 768px) {
+  .bg-pattern {
+    background-image: none;
+    background-color: #7f1d1d; /* Tailwind red-900 */
+  }
+}
+
+/* 平板适配 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .bg-pattern {
+    background-size: cover;
+    background-position: center;
+  }
+}
