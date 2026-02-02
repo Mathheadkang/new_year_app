@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字体测试</title>
+    <style>
+        @font-face {
+            font-family: 'ZhengQing';
+            src: url('/fonts/ZhengQingKeNanBeiCiGongPuSongTi-2.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'ZhenZong';
+            src: url('/fonts/ZhenZongShengDianKaiShu-2.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'YingZhui';
+            src: url('/fonts/YingZhuiXingShu-2.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'YiShan';
+            src: url('/fonts/YiShanBeiZhuanTi.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Aoyagi';
+            src: url('/fonts/aoyagireisyosimo-ttf-2-01-2.ttf') format('truetype');
+        }
+        
+        body {
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .test {
+            margin: 20px 0;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        
+        .font-name {
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+        
+        .sample {
+            font-size: 32px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>字体加载测试</h1>
+    
+    <div class="test">
+        <div class="font-name">系统楷体（默认）</div>
+        <div class="sample" style="font-family: 'STKaiti', 'KaiTi', serif;">
+            春节快乐 福满人间 骏马奔腾 万事如意
+        </div>
+    </div>
+    
+    <div class="test">
+        <div class="font-name">正卿南北朝公牍松体</div>
+        <div class="sample" style="font-family: 'ZhengQing', serif;">
+            春节快乐 福满人间 骏马奔腾 万事如意
+        </div>
+    </div>
+    
+    <div class="test">
+        <div class="font-name">真宗圣典楷书</div>
+        <div class="sample" style="font-family: 'ZhenZong', serif;">
+            春节快乐 福满人间 骏马奔腾 万事如意
+        </div>
+    </div>
+    
+    <div class="test">
+        <div class="font-name">颖追行书</div>
+        <div class="sample" style="font-family: 'YingZhui', serif;">
+            春节快乐 福满人间 骏马奔腾 万事如意
+        </div>
+    </div>
+    
+    <div class="test">
+        <div class="font-name">一山碑篆体</div>
+        <div class="sample" style="font-family: 'YiShan', serif;">
+            春节快乐 福满人间 骏马奔腾 万事如意
+        </div>
+    </div>
+    
+    <div class="test">
+        <div class="font-name">青柳隷书</div>
+        <div class="sample" style="font-family: 'Aoyagi', serif;">
+            春节快乐 福满人间 骏马奔腾 万事如意
+        </div>
+    </div>
+    
+    <script>
+        // 检测字体是否加载
+        document.fonts.ready.then(() => {
+            console.log('所有字体已加载完成');
+            document.fonts.forEach(font => {
+                console.log(`✓ ${font.family} - ${font.status}`);
+            });
+        });
+        
+        // 监听字体加载失败
+        document.fonts.addEventListener('loadingerror', (event) => {
+            console.error('字体加载失败:', event);
+        });
+    </script>
+</body>
+</html>
