@@ -1,0 +1,68 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">🧧 春联生成器</text>
+    <text class="subtitle">AI 为你生成专属春联</text>
+  </view>
+
+  <view class="form">
+    <view class="input-wrapper">
+      <text class="label">输入姓名（1-4个字）</text>
+      <input 
+        class="name-input" 
+        placeholder="请输入姓名" 
+        value="{{name}}"
+        bindinput="onNameInput"
+        maxlength="4"
+      />
+    </view>
+
+    <view class="position-wrapper">
+      <text class="label">藏字方式</text>
+      <view class="position-buttons">
+        <view 
+          wx:for="{{positions}}" 
+          wx:key="value"
+          class="position-btn {{position === item.value ? 'active' : ''}}"
+          bindtap="selectPosition"
+          data-position="{{item.value}}"
+        >
+          <text class="position-label">{{item.label}}</text>
+          <text class="position-desc">{{item.desc}}</text>
+        </view>
+      </view>
+    </view>
+
+    <button 
+      class="generate-btn" 
+      bindtap="generateCouplet"
+      loading="{{loading}}"
+      disabled="{{loading}}"
+    >
+      {{loading ? '生成中...' : '生成春联'}}
+    </button>
+  </view>
+
+  <view class="result" wx:if="{{topCouplet}}">
+    <view class="couplet-display">
+      <view class="horizontal-scroll">
+        <text class="scroll-text">{{horizontalScroll}}</text>
+      </view>
+      <view class="couplet-content">
+        <view class="couplet-line right">
+          <text class="couplet-text">{{topCouplet}}</text>
+        </view>
+        <view class="couplet-line left">
+          <text class="couplet-text">{{bottomCouplet}}</text>
+        </view>
+      </view>
+    </view>
+    <button class="regenerate-btn" bindtap="regenerate">
+      重新生成
+    </button>
+  </view>
+
+  <view class="history-btn-wrapper">
+    <button class="history-btn" bindtap="goToHistory">查看历史</button>
+  </view>
+</view>

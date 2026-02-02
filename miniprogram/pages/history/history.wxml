@@ -1,0 +1,39 @@
+<!--pages/history/history.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">历史记录</text>
+  </view>
+
+  <view class="empty" wx:if="{{historyList.length === 0}}">
+    <text class="empty-text">暂无历史记录</text>
+    <text class="empty-hint">去生成你的第一副春联吧！</text>
+  </view>
+
+  <view class="history-list" wx:else>
+    <view class="history-item" wx:for="{{historyList}}" wx:key="id">
+      <view class="item-header">
+        <view class="name-info">
+          <text class="name">「{{item.name}}」</text>
+          <text class="position-badge">{{item.position === 'head' ? '藏头' : item.position === 'middle' ? '藏中' : '藏尾'}}</text>
+        </view>
+        <text class="date">{{item.timestamp}}</text>
+      </view>
+      <view class="item-content">
+        <view class="horizontal-scroll">{{item.horizontal}}</view>
+        <view class="couplet-lines">
+          <view class="couplet-line">{{item.upper}}</view>
+          <view class="couplet-line">{{item.lower}}</view>
+        </view>
+      </view>
+      <view class="item-actions">
+        <button class="action-btn" bindtap="shareItem" data-index="{{index}}">
+          分享
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <view class="clear-btn-wrapper" wx:if="{{historyList.length > 0}}">
+    <button class="clear-btn" bindtap="clearHistory">清空历史</button>
+  </view>
+</view>

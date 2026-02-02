@@ -1,0 +1,23 @@
+{
+  "name": "spring-couplet-miniprogram",
+  "version": "1.0.0",
+  "description": "春联生成器微信小程序",
+  "main": "app.js",
+  "scripts": {
+    "tsc": "tsc",
+    "compile": "tsc --watch"
+  },
+  "keywords": [
+    "miniprogram",
+    "wechat",
+    "spring-couplet"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/wechat-miniprogram": "^3.4.7",
+    "miniprogram-api-typings": "^3.12.3",
+    "typescript": "^5.6.3"
+  }
+}

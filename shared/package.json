@@ -1,0 +1,15 @@
+{
+  "name": "spring-couplet-shared",
+  "version": "1.0.0",
+  "description": "春联生成器共享代码",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": ["shared", "types", "spring-couplet"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}
