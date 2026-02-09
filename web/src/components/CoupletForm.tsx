@@ -8,6 +8,7 @@ interface CoupletFormProps {
   loading: boolean;
   onFontChange: (font: FontFamily) => void;
   selectedFont: FontFamily;
+  remainingFree: number;
 }
 
 const positions: { value: HidePosition; label: string; desc: string }[] = [
@@ -24,7 +25,7 @@ const fonts: { value: FontFamily; label: string }[] = [
   { value: "zhimangxing", label: "志莽行书" },
 ];
 
-export default function CoupletForm({ onGenerate, loading, onFontChange, selectedFont }: CoupletFormProps) {
+export default function CoupletForm({ onGenerate, loading, onFontChange, selectedFont, remainingFree }: CoupletFormProps) {
   const [name, setName] = useState("");
   const [position, setPosition] = useState<HidePosition>("head");
 
@@ -107,6 +108,15 @@ export default function CoupletForm({ onGenerate, loading, onFontChange, selecte
           "生成春联"
         )}
       </button>
+
+      {/* 剩余免费次数提示 */}
+      <p className="text-center text-sm text-amber-400/60">
+        今日剩余免费次数：
+        <span className={remainingFree > 0 ? "text-amber-300" : "text-red-400"}>
+          {remainingFree}
+        </span>
+        /3
+      </p>
     </form>
   );
 }

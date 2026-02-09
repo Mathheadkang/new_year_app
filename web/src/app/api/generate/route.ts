@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/prompts";
-import { GenerateRequest, Couplet } from "@/lib/types";
+import { Couplet } from "@/lib/types";
+
+interface GenerateRequestBody {
+  name: string;
+  position: "head" | "middle" | "tail";
+  previousCouplets?: string[];
+}
 
 export async function POST(request: NextRequest) {
   const apiKey = process.env.DEEPSEEK_API_KEY;
@@ -11,14 +17,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let body: GenerateRequest;
+  let body: GenerateRequestBody;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { name, position } = body;
+  const { name, position, previousCouplets } = body;
   if (!name || !position || !["head", "middle", "tail"].includes(position)) {
     return NextResponse.json(
       { error: "Invalid parameters: name and position (head/middle/tail) required" },
@@ -45,7 +51,7 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           model: "deepseek-chat",
           messages: [
-            { role: "system", content: buildSystemPrompt() },
+            { role: "system", content: buildSystemPrompt(previousCouplets) },
             { role: "user", content: buildUserPrompt(name, position) },
           ],
           temperature: 0.9,

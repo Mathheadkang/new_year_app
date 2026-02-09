@@ -5,8 +5,18 @@ import CoupletForm from "@/components/CoupletForm";
 import CoupletDisplay from "@/components/CoupletDisplay";
 import CoupletHistory from "@/components/CoupletHistory";
 import ShareButton from "@/components/ShareButton";
+import AdModal from "@/components/AdModal";
 import { Couplet, HidePosition, HistoryEntry, FontFamily } from "@/lib/types";
-import { getHistory, addToHistory, clearHistory } from "@/lib/history";
+import {
+  getHistory,
+  addToHistory,
+  clearHistory,
+  clearHistoryByName,
+  getRecentHistoryForPrompt,
+  needsToWatchAd,
+  getRemainingFreeGenerations,
+  grantAdBonus,
+} from "@/lib/history";
 
 export default function Home() {
   const [couplet, setCouplet] = useState<Couplet | null>(null);
@@ -14,15 +24,37 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [selectedFont, setSelectedFont] = useState<FontFamily>("default");
-  
+  const [remainingFree, setRemainingFree] = useState(3);
+  const [showAdModal, setShowAdModal] = useState(false);
+  const [pendingGenerate, setPendingGenerate] = useState<{
+    name: string;
+    position: HidePosition;
+  } | null>(null);
+
   useEffect(() => {
     setHistory(getHistory());
+    setRemainingFree(getRemainingFreeGenerations());
   }, []);
 
-  const handleGenerate = useCallback(
+  // 小屏幕随机背景图片
+  useEffect(() => {
+    const setRandomBackground = () => {
+      if (window.innerWidth <= 768) {
+        const randomIndex = Math.floor(Math.random() * 6) + 1;
+        document.body.style.backgroundImage = `url('/horse_background/horse${randomIndex}.jpg')`;
+      }
+    };
+
+    setRandomBackground();
+  }, []);
+
+  const doGenerate = useCallback(
     async (name: string, position: HidePosition) => {
       setLoading(true);
       setError(null);
+
+      // 获取该名字的历史记录（最近10条）用于去重
+      const previousCouplets = getRecentHistoryForPrompt(name);
 
       const maxRetries = 3;
 
@@ -31,7 +63,7 @@ export default function Home() {
           const res = await fetch("/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, position }),
+            body: JSON.stringify({ name, position, previousCouplets }),
           });
 
           if (!res.ok) {
@@ -45,6 +77,7 @@ export default function Home() {
             setCouplet(data);
             addToHistory(name, data);
             setHistory(getHistory());
+            setRemainingFree(getRemainingFreeGenerations());
             return;
           }
 
@@ -63,6 +96,37 @@ export default function Home() {
     []
   );
 
+  const handleGenerate = useCallback(
+    async (name: string, position: HidePosition) => {
+      // 检查是否需要看广告
+      if (needsToWatchAd()) {
+        setPendingGenerate({ name, position });
+        setShowAdModal(true);
+        return;
+      }
+
+      await doGenerate(name, position);
+    },
+    [doGenerate]
+  );
+
+  const handleAdComplete = useCallback(() => {
+    setShowAdModal(false);
+    grantAdBonus();
+    setRemainingFree(getRemainingFreeGenerations());
+
+    // 继续之前暂停的生成
+    if (pendingGenerate) {
+      doGenerate(pendingGenerate.name, pendingGenerate.position);
+      setPendingGenerate(null);
+    }
+  }, [pendingGenerate, doGenerate]);
+
+  const handleAdClose = useCallback(() => {
+    setShowAdModal(false);
+    setPendingGenerate(null);
+  }, []);
+
   const handleSelectHistory = useCallback((c: Couplet) => {
     setCouplet(c);
     setError(null);
@@ -71,6 +135,11 @@ export default function Home() {
   const handleClearHistory = useCallback(() => {
     clearHistory();
     setHistory([]);
+  }, []);
+
+  const handleClearHistoryByName = useCallback((name: string) => {
+    clearHistoryByName(name);
+    setHistory(getHistory());
   }, []);
 
   return (
@@ -90,11 +159,12 @@ export default function Home() {
         </div>
 
         {/* Form */}
-        <CoupletForm 
-          onGenerate={handleGenerate} 
+        <CoupletForm
+          onGenerate={handleGenerate}
           loading={loading}
           onFontChange={setSelectedFont}
           selectedFont={selectedFont}
+          remainingFree={remainingFree}
         />
 
         {/* Error */}
@@ -117,8 +187,16 @@ export default function Home() {
           history={history}
           onSelect={handleSelectHistory}
           onClear={handleClearHistory}
+          onClearByName={handleClearHistoryByName}
         />
       </div>
+
+      {/* Ad Modal */}
+      <AdModal
+        isOpen={showAdModal}
+        onClose={handleAdClose}
+        onAdComplete={handleAdComplete}
+      />
     </main>
   );
 }

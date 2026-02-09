@@ -12,7 +12,18 @@ const positionInstructions: Record<HidePosition, string> = {
   tail: "将用户姓名的每个字依次作为上联和下联每句的最后一个字（即藏尾）。如果名字是两个字，第一个字是上联最后一个字，第二个字是下联最后一个字。如果名字是三个字，第一个字是上联最后一个字，第二个字是下联最后一个字，第三个字可藏在横批任何位置。",
 };
 
-export function buildSystemPrompt(): string {
+export function buildSystemPrompt(previousCouplets?: string[]): string {
+  let historyInstruction = "";
+
+  if (previousCouplets && previousCouplets.length > 0) {
+    historyInstruction = `
+
+注意：用户之前已经为这个名字生成过以下对联，请不要生成相同或相似的对联：
+${previousCouplets.map((c, i) => `${i + 1}. ${c}`).join("\n")}
+
+请创作一副完全不同的、有新意的对联。`;
+  }
+
   return `你是一位精通中国传统文化的对联大师。你的任务是为用户创作2026丙午马年春节对联。
 
 要求：
@@ -21,7 +32,7 @@ export function buildSystemPrompt(): string {
 3. 上联和下联字数相同（7字联为佳）
 4. 横批为4个字
 5. 严格按照用户指定的藏字方式将姓名嵌入对联中
-6. 你必须只返回JSON格式，不要有任何其他文字
+6. 你必须只返回JSON格式，不要有任何其他文字${historyInstruction}
 
 返回格式（纯JSON，不要markdown代码块）：
 {"upper":"上联内容","lower":"下联内容","horizontal":"横批内容"}`;

@@ -42,11 +42,43 @@
   background-attachment: fixed;
 }
 
-/* 移动端适配 - 小屏幕使用纯色背景 */
+/* 移动端适配 - 小屏幕使用马背景，默认horse1，JS会随机替换 */
 @media (max-width: 768px) {
   .bg-pattern {
-    background-image: none;
-    background-color: #7f1d1d; /* Tailwind red-900 */
+    background-image: url('/horse_background/horse1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: scroll;
+  }
+
+  /* 小屏幕文字改为黑色 */
+  .text-amber-300,
+  .text-amber-100,
+  .text-amber-200\/70 {
+    color: #000000 !important;
+  }
+
+  /* 表单标签加粗并改为amber-200颜色 */
+  label.text-amber-100 {
+    color: #3e3a27 !important;
+    font-weight: 700 !important;
+  }
+
+  /* 输入框和选择框文字改为白色 */
+  input,
+  select,
+  .text-amber-50 {
+    color: #ffffff !important;
+  }
+
+  /* 占位符文字 */
+  .placeholder-amber-300\/40::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  /* 输入框和选项背景降低透明度 */
+  .bg-red-950\/50 {
+    background-color: rgba(69, 10, 10, 0.9) !important;
   }
 }
 
