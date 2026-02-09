@@ -26,10 +26,11 @@ export interface GroupedHistory {
   [name: string]: HistoryEntry[];
 }
 
-// 每日生成统计（用于广告限制）
+// 生成次数统计（8小时有效期）
 export interface DailyStats {
-  date: string; // YYYY-MM-DD 格式
+  date: string; // YYYY-MM-DD 格式 (保留用于兼容)
   count: number;
+  timestamp: number; // 开始计时的时间戳
 }
 
 // localStorage 存储结构

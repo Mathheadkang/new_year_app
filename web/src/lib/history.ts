@@ -2,12 +2,43 @@ import { Couplet, HistoryEntry, GroupedHistory, DailyStats } from "./types";
 
 const STORAGE_KEY = "couplet_history";
 const STATS_KEY = "couplet_daily_stats";
-const FREE_GENERATION_LIMIT = 3;
+const FREE_GENERATION_LIMIT = 5; // 每周期免费次数
+const EXPIRY_HOURS = 8; // 有效期（小时）
 const MAX_HISTORY_FOR_PROMPT = 10;
 
 // 获取今天的日期字符串
 function getTodayString(): string {
   return new Date().toISOString().split("T")[0];
+}
+
+// 检查是否已过期（8小时）
+function isExpired(timestamp: number): boolean {
+  const now = Date.now();
+  const expiryMs = EXPIRY_HOURS * 60 * 60 * 1000; // 8小时转毫秒
+  return now - timestamp >= expiryMs;
+}
+
+// 获取剩余时间（毫秒）
+export function getRemainingTime(): number {
+  const stats = getDailyStats();
+  if (!stats.timestamp) return 0;
+  const expiryMs = EXPIRY_HOURS * 60 * 60 * 1000;
+  const remaining = (stats.timestamp + expiryMs) - Date.now();
+  return Math.max(0, remaining);
+}
+
+// 格式化剩余时间为 "X小时Y分钟后刷新" 格式
+export function formatRemainingTime(): string {
+  const remaining = getRemainingTime();
+  if (remaining <= 0) return "已刷新";
+  
+  const hours = Math.floor(remaining / (60 * 60 * 1000));
+  const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+  
+  if (hours > 0) {
+    return `${hours}小时${minutes}分钟后刷新`;
+  }
+  return `${minutes}分钟后刷新`;
 }
 
 // 获取所有历史记录
@@ -83,39 +114,49 @@ export function clearHistoryByName(name: string): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
 }
 
-// ========== 每日生成次数统计 ==========
+// ========== 生成次数统计（8小时有效期） ==========
 
-// 获取每日统计
+// 获取生成次数统计
 export function getDailyStats(): DailyStats {
   if (typeof window === "undefined") {
-    return { date: getTodayString(), count: 0 };
+    return { date: getTodayString(), count: 0, timestamp: Date.now() };
   }
   
   try {
     const raw = localStorage.getItem(STATS_KEY);
     if (!raw) {
-      return { date: getTodayString(), count: 0 };
+      return { date: getTodayString(), count: 0, timestamp: Date.now() };
     }
     
     const stats: DailyStats = JSON.parse(raw);
     
-    // 如果不是今天的数据，重置
-    if (stats.date !== getTodayString()) {
-      return { date: getTodayString(), count: 0 };
+    // 兼容旧数据：如果没有 timestamp，添加当前时间
+    if (!stats.timestamp) {
+      stats.timestamp = Date.now();
+    }
+    
+    // 如果已过期（8小时），重置次数
+    if (isExpired(stats.timestamp)) {
+      return { date: getTodayString(), count: 0, timestamp: Date.now() };
     }
     
     return stats;
   } catch {
-    return { date: getTodayString(), count: 0 };
+    return { date: getTodayString(), count: 0, timestamp: Date.now() };
   }
 }
 
-// 增加每日生成计数
+// 增加生成计数
 function incrementDailyCount(): void {
   const stats = getDailyStats();
+  
+  // 如果已过期或是新用户，重置计时器
+  const shouldReset = !stats.timestamp || isExpired(stats.timestamp);
+  
   const newStats: DailyStats = {
     date: getTodayString(),
-    count: stats.date === getTodayString() ? stats.count + 1 : 1,
+    count: shouldReset ? 1 : stats.count + 1,
+    timestamp: shouldReset ? Date.now() : stats.timestamp,
   };
   localStorage.setItem(STATS_KEY, JSON.stringify(newStats));
 }
@@ -132,11 +173,12 @@ export function getRemainingFreeGenerations(): number {
   return Math.max(0, FREE_GENERATION_LIMIT - stats.count);
 }
 
-// 广告观看后授予额外次数（重置为0，相当于获得3次）
-export function grantAdBonus(): void {
-  const newStats: DailyStats = {
-    date: getTodayString(),
-    count: 0,
-  };
-  localStorage.setItem(STATS_KEY, JSON.stringify(newStats));
-}
+// 广告观看后授予额外次数（暂时禁用广告功能）
+// export function grantAdBonus(): void {
+//   const newStats: DailyStats = {
+//     date: getTodayString(),
+//     count: 0,
+//     timestamp: Date.now(),
+//   };
+//   localStorage.setItem(STATS_KEY, JSON.stringify(newStats));
+// }

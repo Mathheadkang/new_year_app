@@ -9,6 +9,7 @@ interface CoupletFormProps {
   onFontChange: (font: FontFamily) => void;
   selectedFont: FontFamily;
   remainingFree: number;
+  refreshTimeLeft: string;
 }
 
 const positions: { value: HidePosition; label: string; desc: string }[] = [
@@ -25,7 +26,7 @@ const fonts: { value: FontFamily; label: string }[] = [
   { value: "zhimangxing", label: "志莽行书" },
 ];
 
-export default function CoupletForm({ onGenerate, loading, onFontChange, selectedFont, remainingFree }: CoupletFormProps) {
+export default function CoupletForm({ onGenerate, loading, onFontChange, selectedFont, remainingFree, refreshTimeLeft }: CoupletFormProps) {
   const [name, setName] = useState("");
   const [position, setPosition] = useState<HidePosition>("head");
 
@@ -110,14 +111,20 @@ export default function CoupletForm({ onGenerate, loading, onFontChange, selecte
       </button>
 
       {/* 剩余免费次数提示 */}
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-1">
         <p className="text-center text-sm text-amber-400/60 rounded-md bg-red-950/50 border border-amber-700/30 px-3 py-1">
-          今日剩余免费次数：
+          剩余免费次数：
           <span className={remainingFree > 0 ? "text-amber-300" : "text-red-400"}>
             {remainingFree}
           </span>
-          /3
+          /5
         </p>
+        {remainingFree === 0 && refreshTimeLeft && (
+          <p className="text-center text-xs text-amber-400/50 flex items-center justify-center gap-1">
+            <span>⏳</span>
+            {refreshTimeLeft}
+          </p>
+        )}
       </div>
     </form>
   );
