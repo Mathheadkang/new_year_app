@@ -52,10 +52,10 @@ export default function CoupletHistory({
   return (
     <div className="w-full max-w-md mx-auto mt-8">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-amber-200 font-bold text-lg">📜 历史记录</h2>
+        <h2 className="text-amber-200 font-bold text-lg rounded-md bg-red-950/50 border border-amber-700/30 px-3 py-1">📜 历史记录</h2>
         <button
           onClick={onClear}
-          className="text-sm text-amber-400/60 hover:text-amber-300 transition-colors"
+          className="text-sm text-amber-400/60 hover:text-amber-300 transition-colors rounded-md bg-red-950/50 border border-amber-700/30 px-3 py-1"
         >
           清空全部
         </button>

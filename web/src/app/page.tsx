@@ -36,16 +36,30 @@ export default function Home() {
     setRemainingFree(getRemainingFreeGenerations());
   }, []);
 
-  // 小屏幕随机背景图片
+  // 小屏幕随机背景图片，响应窗口大小变化
   useEffect(() => {
-    const setRandomBackground = () => {
+    // 页面加载时随机选择一个背景，之后不再改变
+    const randomIndex = Math.floor(Math.random() * 6) + 1;
+    const mobileBackground = `url('/horse_background/horse${randomIndex}.jpg')`;
+
+    const handleBackground = () => {
       if (window.innerWidth <= 768) {
-        const randomIndex = Math.floor(Math.random() * 6) + 1;
-        document.body.style.backgroundImage = `url('/horse_background/horse${randomIndex}.jpg')`;
+        // 小屏幕：使用预先选定的马背景
+        document.body.style.backgroundImage = mobileBackground;
+      } else {
+        // 大屏幕：清除 JS 设置的背景，让 CSS 控制
+        document.body.style.backgroundImage = '';
       }
     };
 
-    setRandomBackground();
+    handleBackground();
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', handleBackground);
+
+    return () => {
+      window.removeEventListener('resize', handleBackground);
+    };
   }, []);
 
   const doGenerate = useCallback(

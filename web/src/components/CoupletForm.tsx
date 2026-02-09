@@ -110,13 +110,15 @@ export default function CoupletForm({ onGenerate, loading, onFontChange, selecte
       </button>
 
       {/* 剩余免费次数提示 */}
-      <p className="text-center text-sm text-amber-400/60">
-        今日剩余免费次数：
-        <span className={remainingFree > 0 ? "text-amber-300" : "text-red-400"}>
-          {remainingFree}
-        </span>
-        /3
-      </p>
+      <div className="flex justify-center">
+        <p className="text-center text-sm text-amber-400/60 rounded-md bg-red-950/50 border border-amber-700/30 px-3 py-1">
+          今日剩余免费次数：
+          <span className={remainingFree > 0 ? "text-amber-300" : "text-red-400"}>
+            {remainingFree}
+          </span>
+          /3
+        </p>
+      </div>
     </form>
   );
 }

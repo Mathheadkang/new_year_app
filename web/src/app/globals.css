@@ -51,34 +51,166 @@
     background-attachment: scroll;
   }
 
-  /* 小屏幕文字改为黑色 */
-  .text-amber-300,
-  .text-amber-100,
-  .text-amber-200\/70 {
-    color: #000000 !important;
+  /* ===== 小屏幕中国传统红金配色方案 ===== */
+  
+  /* 主标题 - 深红色 */
+  h1.text-amber-300 {
+    color: #8B0000 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
   }
 
-  /* 表单标签加粗并改为amber-200颜色 */
+  /* 副标题/描述文字 - 深褐色 */
+  .text-amber-200\/70,
+  p.text-amber-200\/70 {
+    color: #5D1A1A !important;
+  }
+
+  /* 历史记录标题 - 小卡片内文字用浅色 */
+  h2.text-amber-200 {
+    color: #FFE4B5 !important;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  }
+
+  /* 表单标签 - 深褐色加粗 */
   label.text-amber-100 {
-    color: #3e3a27 !important;
+    color: #4A3728 !important;
     font-weight: 700 !important;
   }
 
-  /* 输入框和选择框文字改为白色 */
+  /* 通用文字颜色 - 深红褐色 */
+  .text-amber-300,
+  .text-amber-100,
+  .text-amber-200 {
+    color: #5D1A1A !important;
+  }
+
+  /* 春联显示 - 保持原有金色样式（更高优先级） */
+  .bg-red-700 > p.text-amber-300 {
+    color: #fcd34d !important;
+  }
+
+  /* 历史记录列表中的名字 - 金色更醒目 */
+  span.text-amber-100.font-medium {
+    color: #fbfaf4 !important;
+  }
+
+  /* 历史记录中的对联文字 - 浅金色 */
+  .text-amber-300\/80 {
+    color: #FFEFD5 !important;
+  }
+
+  /* 历史记录中的横批文字 - 淡金色 */
+  .text-amber-200\/60 {
+    color: #FFE4B5 !important;
+  }
+
+  /* 清空按钮/删除按钮 - 浅金色（小卡片内） */
+  .text-amber-400\/60,
+  .text-amber-400\/40 {
+    color: #FFE4B5 !important;
+  }
+
+  .text-amber-400\/60:hover,
+  .text-amber-400\/40:hover {
+    color: #FFD700 !important;
+  }
+
+  /* 箭头和计数器 - 金色 */
+  .text-amber-400,
+  .text-amber-400\/50 {
+    color: #FFD700 !important;
+  }
+
+  /* 输入框和选择框 */
   input,
-  select,
+  select {
+    color: #FFFFFF !important;
+    background-color: rgba(139, 0, 0, 0.85) !important;
+    border-color: #DAA520 !important;
+  }
+
   .text-amber-50 {
-    color: #ffffff !important;
+    color: #FFFFFF !important;
   }
 
   /* 占位符文字 */
+  input::placeholder,
   .placeholder-amber-300\/40::placeholder {
-    color: rgba(255, 255, 255, 0.6) !important;
+    color: rgba(255, 220, 180, 0.7) !important;
   }
 
-  /* 输入框和选项背景降低透明度 */
+  /* 输入框背景 */
   .bg-red-950\/50 {
-    background-color: rgba(69, 10, 10, 0.9) !important;
+    background-color: rgba(139, 0, 0, 0.85) !important;
+    border-color: #FFD700 !important;
+  }
+
+  /* 小卡片内的文字颜色 - 今日剩余免费次数 */
+  .bg-red-950\/50 .text-amber-400\/60 {
+    color: #FFE4B5 !important;
+  }
+
+  .bg-red-950\/50 .text-amber-300 {
+    color: #FFD700 !important;
+  }
+
+  .bg-red-950\/50 .text-red-400 {
+    color: #FF6B6B !important;
+  }
+
+  /* 历史记录卡片背景 */
+  .bg-red-950\/40 {
+    background-color: rgba(139, 0, 0, 0.8) !important;
+    border-color: #DAA520 !important;
+  }
+
+  /* 藏字方式按钮 - 未选中状态 */
+  .bg-red-950\/30 {
+    background-color: rgba(139, 0, 0, 0.6) !important;
+    border-color: #B8860B !important;
+  }
+
+  .bg-red-950\/30 .text-amber-200 {
+    color: #FFE4B5 !important;
+  }
+
+  /* 藏字方式按钮 - 选中状态 */
+  .bg-amber-600 {
+    background-color: #C41E3A !important;
+    border-color: #FFD700 !important;
+  }
+
+  /* 生成按钮 */
+  button.bg-amber-600 {
+    background-color: #C41E3A !important;
+    color: #FFFFFF !important;
+  }
+
+  button.bg-amber-600:hover {
+    background-color: #A01830 !important;
+  }
+
+  /* 错误提示 */
+  .text-red-300 {
+    color: #DC143C !important;
+  }
+
+  .bg-red-950\/50.border-red-700\/50 {
+    background-color: rgba(139, 0, 0, 0.9) !important;
+    border-color: #DC143C !important;
+  }
+
+  /* 边框颜色统一为金色 */
+  .border-amber-600\/50,
+  .border-amber-700\/20,
+  .border-amber-700\/30,
+  .border-amber-700\/10 {
+    border-color: #DAA520 !important;
+  }
+
+  /* 悬停背景效果 */
+  .hover\:bg-amber-600\/10:hover {
+    background-color: rgba(218, 165, 32, 0.15) !important;
   }
 }
 
