@@ -23,12 +23,11 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
         {/* Google AdSense */}
-        <Script
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6838916324119792"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+        ></script>
       </head>
       <body className="antialiased min-h-screen bg-pattern" suppressHydrationWarning>{children}</body>
     </html>
