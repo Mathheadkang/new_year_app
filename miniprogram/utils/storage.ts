@@ -64,6 +64,26 @@ export function clearHistory(): void {
 }
 
 /**
+ * 获取某个名字的历史记录
+ */
+export function getHistoryByName(name: string): CoupletHistory[] {
+  const history = getHistory();
+  return history.filter(item => item.name === name);
+}
+
+/**
+ * 获取某个名字最近N条历史记录（用于系统提示词去重）
+ */
+export function getRecentHistoryForPrompt(name: string, maxCount: number = 10): string[] {
+  const nameHistory = getHistoryByName(name);
+  const recentEntries = nameHistory.slice(0, maxCount);
+  
+  return recentEntries.map(entry => 
+    `上联：${entry.upper}，下联：${entry.lower}，横批：${entry.horizontal}`
+  );
+}
+
+/**
  * 格式化时间戳
  */
 export function formatTime(timestamp: number): string {

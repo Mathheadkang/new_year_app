@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getHistory = getHistory;
 exports.saveToHistory = saveToHistory;
 exports.clearHistory = clearHistory;
+exports.getHistoryByName = getHistoryByName;
+exports.getRecentHistoryForPrompt = getRecentHistoryForPrompt;
 exports.formatTime = formatTime;
 const STORAGE_KEY = 'couplet_history';
 const MAX_HISTORY = 50;
@@ -53,6 +55,21 @@ function clearHistory() {
     catch (error) {
         console.error('Failed to clear history:', error);
     }
+}
+/**
+ * 获取某个名字的历史记录
+ */
+function getHistoryByName(name) {
+    const history = getHistory();
+    return history.filter(item => item.name === name);
+}
+/**
+ * 获取某个名字最近N条历史记录（用于系统提示词去重）
+ */
+function getRecentHistoryForPrompt(name, maxCount = 10) {
+    const nameHistory = getHistoryByName(name);
+    const recentEntries = nameHistory.slice(0, maxCount);
+    return recentEntries.map(entry => `上联：${entry.upper}，下联：${entry.lower}，横批：${entry.horizontal}`);
 }
 /**
  * 格式化时间戳

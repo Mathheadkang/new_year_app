@@ -7,7 +7,14 @@ cloud.init({
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  const { name, position } = event
+  const { action, name, position, page, scene, previousCouplets } = event
+
+  // 如果是生成小程序码的请求
+  if (action === 'getQRCode') {
+    return await generateQRCode(page, scene)
+  }
+
+  // 原有的生成春联逻辑
 
   // 验证参数
   if (!name || !position || !["head", "middle", "tail"].includes(position)) {
@@ -23,7 +30,7 @@ exports.main = async (event, context) => {
   }
 
   // 构建提示词
-  const systemPrompt = buildSystemPrompt()
+  const systemPrompt = buildSystemPrompt(previousCouplets)
   const userPrompt = buildUserPrompt(name, position)
 
   try {
@@ -37,29 +44,7 @@ exports.main = async (event, context) => {
       }
     }
 
-    const response = await cloud.openapi.cloudbase.callFunction({
-      action: 'fetch',
-      data: {
-        url: 'https://api.deepseek.com/v1/chat/completions',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: "deepseek-chat",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt }
-          ],
-          temperature: 0.9,
-          max_tokens: 300
-        })
-      }
-    })
-
-    // 由于云函数限制，我们使用 wx-server-sdk 的 HTTP 请求
-    // 实际实现中需要使用 node-fetch 或其他 HTTP 库
+    // 使用 node-fetch 调用 DeepSeek API
     const fetch = require('node-fetch')
     
     const apiResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
@@ -119,7 +104,18 @@ exports.main = async (event, context) => {
 }
 
 // 构建系统提示词
-function buildSystemPrompt() {
+function buildSystemPrompt(previousCouplets) {
+  let historyInstruction = "";
+
+  if (previousCouplets && previousCouplets.length > 0) {
+    historyInstruction = `
+
+注意：用户之前已经为这个名字生成过以下对联，请不要生成相同或相似的对联：
+${previousCouplets.map((c, i) => `${i + 1}. ${c}`).join("\n")}
+
+请创作一副完全不同的、有新意的对联。`;
+  }
+
   return `你是一位精通中国传统文化的对联大师。你的任务是为用户创作2026丙午马年春节对联。
 
 要求：
@@ -128,10 +124,10 @@ function buildSystemPrompt() {
 3. 上联和下联字数相同（7字联为佳）
 4. 横批为4个字
 5. 严格按照用户指定的藏字方式将姓名嵌入对联中
-6. 你必须只返回JSON格式，不要有任何其他文字
+6. 你必须只返回JSON格式，不要有任何其他文字${historyInstruction}
 
 返回格式（纯JSON，不要markdown代码块）：
-{"upper":"上联内容","lower":"下联内容","horizontal":"横批内容"}`
+{"upper":"上联内容","lower":"下联内容","horizontal":"横批内容"}`;
 }
 
 // 构建用户提示词
@@ -159,4 +155,33 @@ ${instruction}
 藏字方式：${label}
 
 请直接返回JSON，不要包含任何其他文字或代码块标记。`
+}
+
+// 生成小程序码
+async function generateQRCode(page = 'pages/index/index', scene = '') {
+  try {
+    // 使用 getUnlimited 生成小程序码（无数量限制）
+    const result = await cloud.openapi.wxacode.getUnlimited({
+      scene: scene || 'home',  // 场景值（最多32个字符）
+      page: page,
+      check_path: false,       // 不检查页面是否存在
+      env_version: 'trial',    // 'release' 正式版, 'trial' 体验版, 'develop' 开发版
+      width: 280,
+      auto_color: false,       // 不使用默认颜色
+      line_color: {"r":196,"g":29,"b":29}, // 红色（与春联主题配合）
+      is_hyaline: true         // 透明背景
+    })
+    
+    return {
+      success: true,
+      buffer: result.buffer,
+      contentType: result.contentType
+    }
+  } catch (error) {
+    console.error('生成小程序码失败:', error)
+    return {
+      success: false,
+      error: error.message
+    }
+  }
 }

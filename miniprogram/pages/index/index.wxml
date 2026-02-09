@@ -13,8 +13,11 @@
         placeholder="请输入姓名" 
         value="{{name}}"
         bindinput="onNameInput"
-        maxlength="4"
+        bindconfirm="onNameConfirm"
       />
+      <view class="limit-hint">
+        <text class="limit-text">今日剩余次数：{{remainingCount}}/5</text>
+      </view>
     </view>
 
     <view class="position-wrapper">
@@ -40,25 +43,6 @@
       disabled="{{loading}}"
     >
       {{loading ? '生成中...' : '生成春联'}}
-    </button>
-  </view>
-
-  <view class="result" wx:if="{{topCouplet}}">
-    <view class="couplet-display">
-      <view class="horizontal-scroll">
-        <text class="scroll-text">{{horizontalScroll}}</text>
-      </view>
-      <view class="couplet-content">
-        <view class="couplet-line right">
-          <text class="couplet-text">{{topCouplet}}</text>
-        </view>
-        <view class="couplet-line left">
-          <text class="couplet-text">{{bottomCouplet}}</text>
-        </view>
-      </view>
-    </view>
-    <button class="regenerate-btn" bindtap="regenerate">
-      重新生成
     </button>
   </view>
 

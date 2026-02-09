@@ -1,0 +1,194 @@
+/* pages/result/result.wxss */
+.container {
+  min-height: 100vh;
+  padding: 40rpx;
+  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.name-tag {
+  display: inline-block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 16rpx 32rpx;
+  border-radius: 40rpx;
+}
+
+.couplet-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40rpx 0;
+}
+
+.horizontal-scroll {
+  background: linear-gradient(135deg, #c41d1d 0%, #ff5252 100%);
+  padding: 24rpx;
+  border-radius: 16rpx;
+  text-align: center;
+  margin-bottom: 40rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+}
+
+.scroll-text {
+  color: #ffd700;
+  font-size: 48rpx;
+  font-weight: bold;
+  letter-spacing: 16rpx;
+}
+
+.couplet-content {
+  display: flex;
+  justify-content: center;
+  gap: 40rpx;
+  min-height: 500rpx;
+}
+
+.couplet-line {
+  flex: 1;
+  max-width: 280rpx;
+  background: linear-gradient(135deg, #c41d1d 0%, #ff5252 100%);
+  padding: 40rpx 20rpx;
+  border-radius: 16rpx;
+  writing-mode: vertical-rl;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.couplet-text {
+  color: #ffd700;
+  font-size: 48rpx;
+  font-weight: bold;
+  letter-spacing: 20rpx;
+  line-height: 1.8;
+}
+
+.actions {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 40rpx;
+  margin-bottom: 10rpx;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  color: #ff5252;
+}
+
+.action-btn::after {
+  border: none;
+}
+
+.footer {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 10rpx;
+}
+
+/* 分享菜单遮罩 */
+.share-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* 分享菜单内容 */
+.share-content {
+  width: 100%;
+  background: white;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 48rpx 32rpx;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* 分享选项容器 */
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+/* 分享选项按钮 */
+.share-option {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+  color: white;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(255, 107, 107, 0.3);
+}
+
+.share-option::after {
+  border: none;
+}
+
+.share-option:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* 取消按钮 */
+.share-cancel {
+  width: 100%;
+  height: 96rpx;
+  background: #f5f5f5;
+  color: #666;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  margin-top: 24rpx;
+  border: none;
+}
+
+.share-cancel::after {
+  border: none;
+}
+
+.share-cancel:active {
+  background: #e0e0e0;
+}
+
+/* Canvas（隐藏） */
+.canvas-hidden {
+  position: fixed;
+  left: -9999rpx;
+  top: -9999rpx;
+}

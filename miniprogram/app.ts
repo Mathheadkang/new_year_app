@@ -1,6 +1,8 @@
 // app.ts
 App<IAppOption>({
-  globalData: {},
+  globalData: {
+    dailyLimit: 5  // 每次打开小程序重置为5次
+  },
   onLaunch() {
     // 初始化云开发环境
     if (wx.cloud) {

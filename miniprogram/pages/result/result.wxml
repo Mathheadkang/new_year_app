@@ -1,0 +1,57 @@
+<!--pages/result/result.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="name-tag">「{{name}}」的专属春联</text>
+  </view>
+
+  <view class="couplet-container">
+    <view class="horizontal-scroll">
+      <text class="scroll-text">{{horizontal}}</text>
+    </view>
+    
+    <view class="couplet-content">
+      <view class="couplet-line left">
+        <text class="couplet-text">{{lower}}</text>
+      </view>
+      <view class="couplet-line right">
+        <text class="couplet-text">{{upper}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="actions">
+    <button class="action-btn" bindtap="goBack">
+      返回修改
+    </button>
+    <button class="action-btn" bindtap="regenerate">
+      重新生成
+    </button>
+  </view>
+
+  <view class="footer">
+    <button class="action-btn" bindtap="goToHistory">
+      查看历史记录
+    </button>
+    <button class="action-btn" bindtap="showShareMenu">
+      分享春联
+    </button>
+  </view>
+
+  <!-- 分享菜单 -->
+  <view class="share-menu" wx:if="{{showShare}}" bindtap="hideShareMenu">
+    <view class="share-content" catchtap="stopPropagation">
+      <view class="share-options">
+        <button class="share-option" open-type="share">
+          分享给好友
+        </button>
+        <button class="share-option" bindtap="saveToAlbum">
+          保存到相册
+        </button>
+      </view>
+      <button class="share-cancel" catchtap="hideShareMenu">取消</button>
+    </view>
+  </view>
+
+  <!-- Canvas 用于生成图片 -->
+  <canvas type="2d" id="coupletCanvas" class="canvas-hidden" style="width: 375px; height: 600px;"></canvas>
+</view>

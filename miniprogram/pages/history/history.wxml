@@ -9,26 +9,70 @@
     <text class="empty-hint">去生成你的第一副春联吧！</text>
   </view>
 
-  <view class="history-list" wx:else>
-    <view class="history-item" wx:for="{{historyList}}" wx:key="id">
-      <view class="item-header">
+  <!-- 普通视图（< 6 条） -->
+  <view class="history-list" wx:if="{{!useGroupView && historyList.length > 0}}">
+    <view class="slide-container" wx:for="{{historyList}}" wx:key="id">
+      <view class="history-item {{slideIndex === index ? 'slide-left' : ''}}" 
+            bindtouchstart="touchStart" 
+            bindtouchmove="touchMove" 
+            bindtouchend="touchEnd"
+            bindtap="viewItem" 
+            data-itemindex="{{index}}">
+        <view class="item-header">
+          <view class="name-info">
+            <text class="name">「{{item.name}}」</text>
+            <text class="position-badge">{{item.position === 'head' ? '藏头' : item.position === 'middle' ? '藏中' : '藏尾'}}</text>
+          </view>
+          <text class="date">{{item.timestamp}}</text>
+        </view>
+        <view class="item-content">
+          <view class="horizontal-scroll">{{item.horizontal}}</view>
+          <view class="couplet-lines">
+            <view class="couplet-line">{{item.upper}}</view>
+            <view class="couplet-line">{{item.lower}}</view>
+          </view>
+        </view>
+      </view>
+      <view class="delete-btn" bindtap="deleteItem" data-itemindex="{{index}}">删除</view>
+    </view>
+  </view>
+
+  <!-- 分组视图（>= 6 条） -->
+  <view class="history-list" wx:if="{{useGroupView}}">
+    <view class="group-container" wx:for="{{groupedHistory}}" wx:key="name" wx:for-item="group" wx:for-index="groupIndex">
+      <!-- 分组头部（可折叠） -->
+      <view class="group-header" bindtap="toggleGroup" data-index="{{groupIndex}}">
         <view class="name-info">
-          <text class="name">「{{item.name}}」</text>
-          <text class="position-badge">{{item.position === 'head' ? '藏头' : item.position === 'middle' ? '藏中' : '藏尾'}}</text>
+          <text class="name">「{{group.name}}」</text>
+          <text class="count-badge">{{group.count}}条</text>
         </view>
-        <text class="date">{{item.timestamp}}</text>
+        <view class="arrow {{group.expanded ? 'expanded' : ''}}">▼</view>
       </view>
-      <view class="item-content">
-        <view class="horizontal-scroll">{{item.horizontal}}</view>
-        <view class="couplet-lines">
-          <view class="couplet-line">{{item.upper}}</view>
-          <view class="couplet-line">{{item.lower}}</view>
+      
+      <!-- 分组内容（展开时显示） -->
+      <view class="group-items" wx:if="{{group.expanded}}">
+        <view class="slide-container" wx:for="{{group.items}}" wx:key="id">
+          <view class="history-item {{slideIndex === groupIndex + '-' + index ? 'slide-left' : ''}}" 
+                bindtouchstart="touchStart" 
+                bindtouchmove="touchMove" 
+                bindtouchend="touchEnd"
+                bindtap="viewItem" 
+                data-groupindex="{{groupIndex}}" 
+                data-itemindex="{{index}}">
+            <view class="item-header">
+              <text class="position-badge">{{item.position === 'head' ? '藏头' : item.position === 'middle' ? '藏中' : '藏尾'}}</text>
+              <text class="date">{{item.timestamp}}</text>
+            </view>
+            <view class="item-content">
+              <view class="horizontal-scroll">{{item.horizontal}}</view>
+              <view class="couplet-lines">
+                <view class="couplet-line">{{item.upper}}</view>
+                <view class="couplet-line">{{item.lower}}</view>
+              </view>
+            </view>
+          </view>
+          <view class="delete-btn" bindtap="deleteItem" data-groupindex="{{groupIndex}}" data-itemindex="{{index}}">删除</view>
         </view>
-      </view>
-      <view class="item-actions">
-        <button class="action-btn" bindtap="shareItem" data-index="{{index}}">
-          分享
-        </button>
       </view>
     </view>
   </view>

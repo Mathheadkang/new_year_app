@@ -3,6 +3,10 @@
   min-height: 100vh;
   padding: 40rpx;
   background: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
 }
 
 .header {
@@ -17,7 +21,7 @@
 
 .empty {
   text-align: center;
-  padding: 120rpx 0;
+  padding-top: 80rpx;
 }
 
 .empty-text {
@@ -37,6 +41,7 @@
   display: flex;
   flex-direction: column;
   gap: 24rpx;
+  width: 100%;
 }
 
 .history-item {
@@ -44,6 +49,8 @@
   border-radius: 16rpx;
   padding: 32rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .item-header {
@@ -143,4 +150,113 @@
   font-size: 28rpx;
   padding: 20rpx 60rpx;
   width: auto;
+}
+
+/* 分组视图样式 */
+.group-container {
+  margin-bottom: 24rpx;
+  width: 100%;
+}
+
+.group-header {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.count-badge {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+  color: #fff;
+  font-size: 22rpx;
+  border-radius: 8rpx;
+}
+
+.arrow {
+  font-size: 24rpx;
+  color: #999;
+  transition: transform 0.3s ease;
+}
+
+.arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.group-items {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.group-items .history-item {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.group-items .item-header {
+  margin-bottom: 16rpx;
+  padding-bottom: 12rpx;
+}
+
+/* 滑动删除样式 */
+.slide-container {
+  position: relative;
+  margin-bottom: 24rpx;
+  border-radius: 16rpx;
+  height: auto;
+}
+
+.slide-container .history-item {
+  position: relative;
+  transition: transform 0.3s ease;
+  transform: translateX(0);
+  margin-bottom: 0;
+  z-index: 2;
+  background: #fff;
+}
+
+.slide-container .history-item.slide-left {
+  transform: translateX(-160rpx);
+}
+
+.delete-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 160rpx;
+  background: #ff5252;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  z-index: 1;
+  border-radius: 0 16rpx 16rpx 0;
+}
+
+.group-items .slide-container {
+  margin-bottom: 16rpx;
+  border-radius: 12rpx;
+}
+
+.group-items .slide-container:last-child {
+  margin-bottom: 0;
+}
+
+.group-items .delete-btn {
+  border-radius: 0 12rpx 12rpx 0;
 }
