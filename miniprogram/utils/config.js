@@ -9,7 +9,7 @@ exports.validateApiConfig = validateApiConfig;
  * 本地开发: http://localhost:3000
  * Vercel 部署后: https://your-app.vercel.app
  */
-exports.API_BASE_URL = 'YOUR_VERCEL_URL_HERE'; // 👈 请在这里填写你的 Vercel 地址
+exports.API_BASE_URL = 'https://2026newyear.com'; // 👈 请在这里填写你的 Vercel 地址
 /**
  * API 端点
  */
@@ -20,7 +20,7 @@ exports.API_ENDPOINTS = {
  * 验证 API 配置
  */
 function validateApiConfig() {
-    if (!exports.API_BASE_URL || exports.API_BASE_URL === 'YOUR_VERCEL_URL_HERE') {
+    if (!exports.API_BASE_URL || exports.API_BASE_URL.includes('YOUR_VERCEL_URL_HERE')) {
         return false;
     }
     return true;

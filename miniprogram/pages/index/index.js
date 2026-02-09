@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // index.ts
-const config_1 = require("../../utils/config");
 const storage_1 = require("../../utils/storage");
 Page({
     data: {
@@ -18,14 +17,7 @@ Page({
         ]
     },
     onLoad() {
-        // 检查 API 配置
-        if (!(0, config_1.validateApiConfig)()) {
-            wx.showModal({
-                title: '提示',
-                content: '请先在 utils/config.ts 中配置 Vercel 部署地址',
-                showCancel: false
-            });
-        }
+        // 云函数方式不需要检查 API 配置
     },
     onNameInput(e) {
         this.setData({
@@ -55,77 +47,52 @@ Page({
             });
             return;
         }
-        // 验证 API 配置
-        if (!(0, config_1.validateApiConfig)()) {
-            wx.showModal({
-                title: '配置错误',
-                content: '请先在 utils/config.ts 中配置 Vercel 部署地址',
-                showCancel: false
-            });
-            return;
-        }
         this.setData({ loading: true });
         try {
-            wx.request({
-                url: config_1.API_ENDPOINTS.generate,
-                method: 'POST',
+            // 调用云函数
+            console.log('调用云函数，参数:', { name, position: this.data.position });
+            const res = await wx.cloud.callFunction({
+                name: 'router',
                 data: {
                     name: name,
                     position: this.data.position
-                },
-                header: {
-                    'content-type': 'application/json'
-                },
-                success: (res) => {
-                    if (res.statusCode === 200) {
-                        const data = res.data;
-                        this.setData({
-                            topCouplet: data.upper,
-                            bottomCouplet: data.lower,
-                            horizontalScroll: data.horizontal
-                        });
-                        // 保存到历史记录
-                        (0, storage_1.saveToHistory)({
-                            name: name,
-                            position: this.data.position,
-                            upper: data.upper,
-                            lower: data.lower,
-                            horizontal: data.horizontal
-                        });
-                        wx.showToast({
-                            title: '生成成功',
-                            icon: 'success'
-                        });
-                    }
-                    else {
-                        throw new Error('API returned error status');
-                    }
-                },
-                fail: (error) => {
-                    console.error('Request failed:', error);
-                    let errorMsg = '生成失败，请重试';
-                    // 判断是否是网络错误
-                    if (error.errMsg && error.errMsg.includes('request:fail')) {
-                        errorMsg = '网络请求失败，请检查：\n1. 网络连接\n2. 服务器域名是否已配置';
-                    }
-                    wx.showModal({
-                        title: '生成失败',
-                        content: errorMsg,
-                        showCancel: false
-                    });
-                },
-                complete: () => {
-                    this.setData({ loading: false });
                 }
+            });
+            console.log('云函数返回结果:', res);
+            const result = res.result;
+            if (result.error) {
+                console.error('云函数返回错误:', result.error);
+                throw new Error(result.error);
+            }
+            console.log('解析结果:', result);
+            this.setData({
+                topCouplet: result.upper,
+                bottomCouplet: result.lower,
+                horizontalScroll: result.horizontal
+            });
+            console.log('设置数据完成:', this.data);
+            // 保存到历史记录
+            (0, storage_1.saveToHistory)({
+                name: name,
+                position: this.data.position,
+                upper: result.upper,
+                lower: result.lower,
+                horizontal: result.horizontal
+            });
+            wx.showToast({
+                title: '生成成功',
+                icon: 'success'
             });
         }
         catch (error) {
             console.error('Generate error:', error);
             wx.showModal({
                 title: '生成失败',
-                content: '发生未知错误，请重试',
+                content: error.message || '生成失败，请重试',
                 showCancel: false
             });
+        }
+        finally {
             this.setData({ loading: false });
         }
     },

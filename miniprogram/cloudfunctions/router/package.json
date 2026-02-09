@@ -1,0 +1,15 @@
+{
+  "name": "router",
+  "version": "1.0.0",
+  "description": "生成春联云函数",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest",
+    "node-fetch": "^2.6.1"
+  }
+}
