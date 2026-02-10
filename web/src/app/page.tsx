@@ -5,6 +5,8 @@ import CoupletForm from "@/components/CoupletForm";
 import CoupletDisplay from "@/components/CoupletDisplay";
 import CoupletHistory from "@/components/CoupletHistory";
 import ShareButton from "@/components/ShareButton";
+import ContactUs from "@/components/ContactUs";
+import HourglassModal from "@/components/HourglassModal";
 // import AdModal from "@/components/AdModal"; // 暂时禁用广告功能
 import { Couplet, HidePosition, HistoryEntry, FontFamily } from "@/lib/types";
 import {
@@ -15,6 +17,7 @@ import {
   getRecentHistoryForPrompt,
   needsToWatchAd,
   getRemainingFreeGenerations,
+  getRemainingTime,
   formatRemainingTime,
   // grantAdBonus, // 暂时禁用广告功能
 } from "@/lib/history";
@@ -27,6 +30,8 @@ export default function Home() {
   const [selectedFont, setSelectedFont] = useState<FontFamily>("default");
   const [remainingFree, setRemainingFree] = useState(5);
   const [refreshTimeLeft, setRefreshTimeLeft] = useState("");
+  const [showHourglass, setShowHourglass] = useState(false);
+  const [hourglassSeconds, setHourglassSeconds] = useState(0);
   // const [showAdModal, setShowAdModal] = useState(false); // 暂时禁用广告功能
   // const [pendingGenerate, setPendingGenerate] = useState<{
   //   name: string;
@@ -125,7 +130,9 @@ export default function Home() {
     async (name: string, position: HidePosition) => {
       // 检查是否达到限制
       if (needsToWatchAd()) {
-        setError(`您已用完本次周期的 5 次免费生成机会，${formatRemainingTime()}可重新生成`);
+        setHourglassSeconds(Math.ceil(getRemainingTime() / 1000));
+        setRefreshTimeLeft(formatRemainingTime());
+        setShowHourglass(true);
         return;
       }
 
@@ -170,6 +177,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen py-8 px-4">
+      <ContactUs />
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -224,6 +232,14 @@ export default function Home() {
         onClose={handleAdClose}
         onAdComplete={handleAdComplete}
       /> */}
+
+      {/* Hourglass Cooldown Modal */}
+      <HourglassModal
+        isOpen={showHourglass}
+        onClose={() => setShowHourglass(false)}
+        totalSeconds={hourglassSeconds}
+        refreshTimeText={refreshTimeLeft}
+      />
     </main>
   );
 }
