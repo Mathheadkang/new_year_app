@@ -5,7 +5,7 @@ import { callLLMApi, getActiveProvider, getApiKey } from "@/lib/modelConfig";
 
 interface GenerateRequestBody {
   name: string;
-  position: "head" | "middle" | "tail";
+  position: "head" | "middle" | "random";
   previousCouplets?: string[];
 }
 
@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
   }
 
   const { name, position, previousCouplets } = body;
-  if (!name || !position || !["head", "middle", "tail"].includes(position)) {
+  if (!name || !position || !["head", "middle", "random"].includes(position)) {
     return NextResponse.json(
-      { error: "Invalid parameters: name and position (head/middle/tail) required" },
+      { error: "Invalid parameters: name and position (head/middle/random) required" },
       { status: 400 }
     );
   }

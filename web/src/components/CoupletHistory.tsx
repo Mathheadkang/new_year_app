@@ -10,7 +10,7 @@ interface CoupletHistoryProps {
   onClearByName: (name: string) => void;
 }
 
-const positionLabels = { head: "藏头", middle: "藏中", tail: "藏尾" } as const;
+const positionLabels = { head: "藏头", middle: "藏中", random: "随机" } as const;
 
 // 将历史记录按名字分组
 function groupByName(history: HistoryEntry[]): GroupedHistory {

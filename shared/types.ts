@@ -1,7 +1,7 @@
 // shared/types.ts
 // 共享的类型定义，供 web 和 miniprogram 使用
 
-export type HidePosition = "head" | "middle" | "tail";
+export type HidePosition = "head" | "middle" | "random";
 
 export interface GenerateRequest {
   name: string;

@@ -5,6 +5,7 @@ import CoupletForm from "@/components/CoupletForm";
 import CoupletDisplay from "@/components/CoupletDisplay";
 import CoupletHistory from "@/components/CoupletHistory";
 import ShareButton from "@/components/ShareButton";
+import BackgroundPicker from "@/components/BackgroundPicker";
 import ContactUs from "@/components/ContactUs";
 import HourglassModal from "@/components/HourglassModal";
 // import AdModal from "@/components/AdModal"; // 暂时禁用广告功能
@@ -30,6 +31,8 @@ export default function Home() {
   const [selectedFont, setSelectedFont] = useState<FontFamily>("default");
   const [remainingFree, setRemainingFree] = useState(5);
   const [refreshTimeLeft, setRefreshTimeLeft] = useState("");
+  const [selectedBackground, setSelectedBackground] = useState<string | null>(null);
+  const [showBackgroundPicker, setShowBackgroundPicker] = useState(false);
   const [showHourglass, setShowHourglass] = useState(false);
   const [hourglassSeconds, setHourglassSeconds] = useState(0);
   // const [showAdModal, setShowAdModal] = useState(false); // 暂时禁用广告功能
@@ -213,7 +216,29 @@ export default function Home() {
         {couplet && (
           <div className="mt-8 flex flex-col items-center gap-4">
             <CoupletDisplay couplet={couplet} fontFamily={selectedFont} />
-            <ShareButton couplet={couplet} />
+
+            {/* Action buttons row */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              <button
+                onClick={() => setShowBackgroundPicker(!showBackgroundPicker)}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors shadow flex items-center gap-2 ${
+                  showBackgroundPicker
+                    ? "bg-amber-500 text-white"
+                    : "bg-amber-700 hover:bg-amber-600 text-amber-100"
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                选择背景
+              </button>
+              <ShareButton couplet={couplet} fontFamily={selectedFont} backgroundImage={selectedBackground} />
+            </div>
+
+            {/* Background picker grid (expandable) */}
+            {showBackgroundPicker && (
+              <BackgroundPicker selected={selectedBackground} onChange={setSelectedBackground} />
+            )}
           </div>
         )}
 

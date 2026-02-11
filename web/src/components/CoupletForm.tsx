@@ -15,7 +15,7 @@ interface CoupletFormProps {
 const positions: { value: HidePosition; label: string; desc: string }[] = [
   { value: "head", label: "藏头", desc: "名字藏在每句开头" },
   { value: "middle", label: "藏中", desc: "名字藏在每句中间" },
-  { value: "tail", label: "藏尾", desc: "名字藏在每句末尾" },
+  { value: "random", label: "随机", desc: "AI自由选择藏字方式" },
 ];
 
 const fonts: { value: FontFamily; label: string }[] = [

@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Couplet } from "@/lib/types";
+import { Couplet, FontFamily } from "@/lib/types";
+import PreviewModal from "./PreviewModal";
 
 interface ShareButtonProps {
   couplet: Couplet;
+  fontFamily?: FontFamily;
+  backgroundImage?: string | null;
 }
 
 const RED = "#CC0000";
@@ -13,7 +16,21 @@ const GOLD = "#F6C445";
 const GOLD_BORDER = "#D4A017";
 const WATERMARK_COLOR = "rgba(255, 255, 255, 0.7)";
 
-const QR_CODE_PATH = "/qrcode_305377322_e73f938c6a43205c379437b46b766cc6.png";
+const QR_CODE_PATH = "/QR.png";
+
+const canvasFontMap: Record<FontFamily, string> = {
+  default: "'STKaiti', 'KaiTi', 'SimSun', 'Songti SC', serif",
+  zhengqing: "'ZhengQing', 'STKaiti', 'KaiTi', serif",
+  liujianmaocao: "'LiuJianMaoCao', 'STKaiti', 'KaiTi', serif",
+  mashanzheng: "'MaShanZheng', 'STKaiti', 'KaiTi', serif",
+  zhimangxing: "'ZhiMangXing', 'STKaiti', 'KaiTi', serif",
+};
+
+export interface BgTransform {
+  offsetX: number;
+  offsetY: number;
+  zoom: number;
+}
 
 // Load image as a Promise
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -26,10 +43,15 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-async function drawCoupletToCanvas(couplet: Couplet): Promise<HTMLCanvasElement> {
+export async function drawCoupletToCanvas(
+  couplet: Couplet,
+  fontFamily: FontFamily = "default",
+  backgroundImage?: string | null,
+  bgTransform?: BgTransform
+): Promise<HTMLCanvasElement> {
   const scale = 2;
   const canvasW = 600 * scale;
-  const canvasH = 780 * scale; // Increased height for watermark and QR code
+  const canvasH = 780 * scale;
 
   const canvas = document.createElement("canvas");
   canvas.width = canvasW;
@@ -37,10 +59,36 @@ async function drawCoupletToCanvas(couplet: Couplet): Promise<HTMLCanvasElement>
   const ctx = canvas.getContext("2d")!;
 
   // Background
-  ctx.fillStyle = DARK_RED;
-  ctx.fillRect(0, 0, canvasW, canvasH);
+  if (backgroundImage) {
+    try {
+      const bgImg = await loadImage(backgroundImage);
+      const bgZoom = bgTransform?.zoom ?? 1.5;
+      const bgOffX = bgTransform?.offsetX ?? 0;
+      const bgOffY = bgTransform?.offsetY ?? 0;
 
-  const font = "'STKaiti', 'KaiTi', 'SimSun', 'Songti SC', serif";
+      const imgRatio = bgImg.width / bgImg.height;
+      const canvasRatio = canvasW / canvasH;
+      let drawW: number, drawH: number;
+      if (imgRatio > canvasRatio) {
+        drawH = canvasH * bgZoom;
+        drawW = drawH * imgRatio;
+      } else {
+        drawW = canvasW * bgZoom;
+        drawH = drawW / imgRatio;
+      }
+      const drawX = (canvasW - drawW) / 2 + bgOffX;
+      const drawY = (canvasH - drawH) / 2 + bgOffY;
+      ctx.drawImage(bgImg, drawX, drawY, drawW, drawH);
+    } catch {
+      ctx.fillStyle = DARK_RED;
+      ctx.fillRect(0, 0, canvasW, canvasH);
+    }
+  } else {
+    ctx.fillStyle = DARK_RED;
+    ctx.fillRect(0, 0, canvasW, canvasH);
+  }
+
+  const font = canvasFontMap[fontFamily];
 
   // --- 横批 (horizontal scroll, top center) ---
   const hbW = 360 * scale;
@@ -48,14 +96,12 @@ async function drawCoupletToCanvas(couplet: Couplet): Promise<HTMLCanvasElement>
   const hbX = (canvasW - hbW) / 2;
   const hbY = 30 * scale;
 
-  // Red panel with gold border
   ctx.strokeStyle = GOLD_BORDER;
   ctx.lineWidth = 4 * scale;
   ctx.fillStyle = RED;
   ctx.fillRect(hbX, hbY, hbW, hbH);
   ctx.strokeRect(hbX, hbY, hbW, hbH);
 
-  // Horizontal text
   ctx.fillStyle = GOLD;
   ctx.font = `bold ${32 * scale}px ${font}`;
   ctx.textAlign = "center";
@@ -80,7 +126,6 @@ async function drawCoupletToCanvas(couplet: Couplet): Promise<HTMLCanvasElement>
   const totalScrollsW = scrollW * 2 + gap;
   const scrollStartX = (canvasW - totalScrollsW) / 2;
 
-  // Draw a single vertical scroll
   const drawScroll = (x: number, chars: string[]) => {
     ctx.fillStyle = RED;
     ctx.fillRect(x, scrollY, scrollW, scrollH);
@@ -88,7 +133,6 @@ async function drawCoupletToCanvas(couplet: Couplet): Promise<HTMLCanvasElement>
     ctx.lineWidth = 4 * scale;
     ctx.strokeRect(x, scrollY, scrollW, scrollH);
 
-    // Inner border
     const inset = 6 * scale;
     ctx.strokeStyle = GOLD_BORDER;
     ctx.lineWidth = 1.5 * scale;
@@ -105,11 +149,10 @@ async function drawCoupletToCanvas(couplet: Couplet): Promise<HTMLCanvasElement>
     });
   };
 
-  // Upper couplet on the right, lower on the left (traditional order)
   drawScroll(scrollStartX + scrollW + gap, upperChars);
   drawScroll(scrollStartX, lowerChars);
 
-  // --- Watermark text (below couplets, center) ---
+  // --- Watermark ---
   const watermarkY = scrollY + scrollH + 100 * scale;
   ctx.fillStyle = WATERMARK_COLOR;
   ctx.font = `${16 * scale}px ${font}`;
@@ -117,125 +160,43 @@ async function drawCoupletToCanvas(couplet: Couplet): Promise<HTMLCanvasElement>
   ctx.textBaseline = "middle";
   ctx.fillText("由春联生成器生成", canvasW / 2, watermarkY);
 
-  // --- QR Code (bottom right) ---
+  // --- QR Code ---
   try {
     const qrImg = await loadImage(QR_CODE_PATH);
-    const qrSize = 120 * scale; // 80px as requested
-    const qrX = canvasW - qrSize - 20 * scale; // 20px padding from right
-    const qrY = canvasH - qrSize - 20 * scale; // 20px padding from bottom
+    const qrSize = 120 * scale;
+    const qrX = canvasW - qrSize - 20 * scale;
+    const qrY = canvasH - qrSize - 20 * scale;
     ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
   } catch (err) {
     console.error("Failed to load QR code:", err);
-    // Continue without QR code if loading fails
   }
 
   return canvas;
 }
 
-export default function ShareButton({ couplet }: ShareButtonProps) {
-  const [showShareTip, setShowShareTip] = useState(false);
-
-  const generateCanvas = async () => {
-    return await drawCoupletToCanvas(couplet);
-  };
-
-  const handleSave = async () => {
-    try {
-      const canvas = await generateCanvas();
-      const dataUrl = canvas.toDataURL("image/png");
-
-      // Fallback: download
-      const link = document.createElement("a");
-      link.download = "spring-couplet.png";
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error("Export failed:", err);
-      alert("图片导出失败，请重试");
-    }
-  };
-
-  const handleShare = async () => {
-    try {
-      const canvas = await generateCanvas();
-      const dataUrl = canvas.toDataURL("image/png");
-
-      // Try native share on mobile
-      if (navigator.share && navigator.canShare) {
-        try {
-          const blob = await (await fetch(dataUrl)).blob();
-          const file = new File([blob], "spring-couplet.png", {
-            type: "image/png",
-          });
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: "我的春联",
-              text: "快来生成你的专属春联吧！",
-              files: [file]
-            });
-            return;
-          }
-        } catch {
-          // Fall through to show tip
-        }
-      }
-
-      // Show share tip for platforms without native share
-      setShowShareTip(true);
-
-      // Also download the image
-      const link = document.createElement("a");
-      link.download = "spring-couplet.png";
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error("Share failed:", err);
-      alert("分享失败，请重试");
-    }
-  };
+export default function ShareButton({ couplet, fontFamily = "default", backgroundImage }: ShareButtonProps) {
+  const [showPreview, setShowPreview] = useState(false);
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="flex gap-3">
-        <button
-          onClick={handleSave}
-          className="px-6 py-2 rounded-lg bg-amber-700 hover:bg-amber-600 text-amber-100 font-medium transition-colors shadow"
-        >
-          保存图片
-        </button>
-        <button
-          onClick={handleShare}
-          className="px-6 py-2 rounded-lg bg-red-700 hover:bg-red-600 text-amber-100 font-medium transition-colors shadow flex items-center gap-2"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-            />
-          </svg>
-          分享图片
-        </button>
-      </div>
+    <>
+      <button
+        onClick={() => setShowPreview(true)}
+        className="px-6 py-2 rounded-lg bg-amber-700 hover:bg-amber-600 text-amber-100 font-medium transition-colors shadow flex items-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
+        编辑图片并保存
+      </button>
 
-      {showShareTip && (
-        <div className="bg-amber-900/80 text-amber-100 px-4 py-3 rounded-lg text-sm max-w-xs text-center animate-fade-in">
-          <p>图片已保存到本地</p>
-          <p className="mt-1 text-amber-200/80">请打开微信/小红书，选择图片分享给好友或发布动态</p>
-          <button
-            onClick={() => setShowShareTip(false)}
-            className="mt-2 text-amber-300 underline text-xs"
-          >
-            知道了
-          </button>
-        </div>
+      {showPreview && (
+        <PreviewModal
+          couplet={couplet}
+          fontFamily={fontFamily}
+          backgroundImage={backgroundImage ?? null}
+          onClose={() => setShowPreview(false)}
+        />
       )}
-    </div>
+    </>
   );
 }

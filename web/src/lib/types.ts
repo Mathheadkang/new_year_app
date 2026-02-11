@@ -1,4 +1,4 @@
-export type HidePosition = "head" | "middle" | "tail";
+export type HidePosition = "head" | "middle" | "random";
 
 export type FontFamily = "default" | "zhengqing" | "liujianmaocao" | "mashanzheng" | "zhimangxing";
 
