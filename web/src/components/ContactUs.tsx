@@ -53,13 +53,13 @@ export default function ContactUs() {
                 </div>
               </li>
 
-              <li className="flex items-start gap-2">
+              {/* <li className="flex items-start gap-2">
                 <span className="shrink-0">💬</span>
                 <div>
                   <p className="font-semibold text-amber-200">微信公众号</p>
                   <p className="text-amber-100/80">（请填写公众号名称）</p>
                 </div>
-              </li>
+              </li> */}
 
 
               <li className="flex items-start gap-2">
