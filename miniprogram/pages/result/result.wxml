@@ -6,14 +6,17 @@
 
   <view class="couplet-container">
     <view class="horizontal-scroll">
+      <image class="horizontal-bg" src="/images/top.png" mode="scaleToFill"></image>
       <text class="scroll-text">{{horizontal}}</text>
     </view>
     
     <view class="couplet-content">
       <view class="couplet-line left">
+        <image class="couplet-bg" src="/images/left.png" mode="scaleToFill"></image>
         <text class="couplet-text">{{lower}}</text>
       </view>
       <view class="couplet-line right">
+        <image class="couplet-bg" src="/images/right.png" mode="scaleToFill"></image>
         <text class="couplet-text">{{upper}}</text>
       </view>
     </view>

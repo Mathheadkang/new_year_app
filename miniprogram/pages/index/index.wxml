@@ -36,17 +36,21 @@
       </view>
     </view>
 
-    <button 
-      class="generate-btn" 
-      bindtap="generateCouplet"
-      loading="{{loading}}"
-      disabled="{{loading}}"
-    >
-      {{loading ? '生成中...' : '生成春联'}}
-    </button>
+    <view class="btn-group">
+      <button 
+        class="generate-btn" 
+        bindtap="generateCouplet"
+        loading="{{loading}}"
+        disabled="{{loading}}"
+      >
+        {{loading ? '生成中...' : '生成春联'}}
+      </button>
+      <button class="history-btn" bindtap="goToHistory">查看历史</button>
+    </view>
   </view>
 
-  <view class="history-btn-wrapper">
-    <button class="history-btn" bindtap="goToHistory">查看历史</button>
+  <!-- 底部装饰图片 -->
+  <view class="bottom-decoration">
+    <image src="/images/bottom.png" mode="widthFix" class="bottom-image"></image>
   </view>
 </view>

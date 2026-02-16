@@ -182,7 +182,7 @@ Page({
         const query = wx.createSelectorQuery();
         query.select('#coupletCanvas')
           .fields({ node: true, size: true })
-          .exec((res) => {
+          .exec(async (res) => {
             if (!res || !res[0]) {
               reject(new Error('Canvas not found'));
               return;
@@ -192,104 +192,37 @@ Page({
             const ctx = canvas.getContext('2d');
             const dpr = wx.getSystemInfoSync().pixelRatio;
             
-            // 设置画布尺寸
-            canvas.width = 375 * dpr;
-            canvas.height = 600 * dpr;
+            // 设置画布尺寸（调整为更宽、更矮的比例）
+            const canvasWidth = 500;
+            const canvasHeight = 700;
+            canvas.width = canvasWidth * dpr;
+            canvas.height = canvasHeight * dpr;
             ctx.scale(dpr, dpr);
 
-            // 绘制背景渐变
-            const gradient = ctx.createLinearGradient(0, 0, 375, 600);
+            // 绘制渐变红色背景
+            const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
             gradient.addColorStop(0, '#ff6b6b');
             gradient.addColorStop(1, '#feca57');
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 375, 600);
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-            // 绘制横批背景（红色渐变，圆角）
-            const horizontalWidth = 200;
-            const horizontalX = (375 - horizontalWidth) / 2;
-            const horizontalGradient = ctx.createLinearGradient(horizontalX, 75, horizontalX + horizontalWidth, 135);
-            horizontalGradient.addColorStop(0, '#c41d1d');
-            horizontalGradient.addColorStop(1, '#ff5252');
-            ctx.fillStyle = horizontalGradient;
-            this.drawRoundRect(ctx, horizontalX, 75, horizontalWidth, 60, 8);
-            
-            // 绘制横批文字（金色，带字间距）
-            ctx.fillStyle = '#ffd700';
-            ctx.font = 'bold 30px sans-serif';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-            
-            // 手动绘制每个字符以实现 letter-spacing
-            const horizontalChars = this.data.horizontal.split('');
-            const letterSpacing = 8; // 16rpx 转换为约 8px
-            const totalWidth = horizontalChars.reduce((sum, char) => {
-              return sum + ctx.measureText(char).width + letterSpacing;
-            }, -letterSpacing); // 最后一个字符后不需要间距
-            
-            let startX = (375 - totalWidth) / 2;
-            horizontalChars.forEach(char => {
-              ctx.fillText(char, startX, 105);
-              startX += ctx.measureText(char).width + letterSpacing;
-            });
-
-            // 绘制对联背景（右侧 - 上联，带渐变和圆角）
-            const upperGradient = ctx.createLinearGradient(250, 160, 325, 510);
-            upperGradient.addColorStop(0, '#c41d1d');
-            upperGradient.addColorStop(1, '#ff5252');
-            ctx.fillStyle = upperGradient;
-            // 绘制圆角矩形
-            this.drawRoundRect(ctx, 250, 160, 75, 350, 8);
-            
-            // 绘制对联背景（左侧 - 下联，带渐变和圆角）
-            const lowerGradient = ctx.createLinearGradient(50, 160, 125, 510);
-            lowerGradient.addColorStop(0, '#c41d1d');
-            lowerGradient.addColorStop(1, '#ff5252');
-            ctx.fillStyle = lowerGradient;
-            // 绘制圆角矩形
-            this.drawRoundRect(ctx, 50, 160, 75, 350, 8);
-
-            // 绘制上联文字（竖排，从右到左，金色）
-            ctx.fillStyle = '#ffd700';
-            ctx.font = 'bold 24px sans-serif';
-            ctx.textAlign = 'center';
-            const upperChars = this.data.upper.split('');
-            upperChars.forEach((char, index) => {
-              ctx.fillText(char, 287.5, 190 + index * 45);
-            });
-
-            // 绘制下联文字（竖排，金色）
-            const lowerChars = this.data.lower.split('');
-            lowerChars.forEach((char, index) => {
-              ctx.fillText(char, 87.5, 190 + index * 45);
-            });
-
-            // 绘制小程序码
-            if (qrCodePath) {
-              console.log('开始绘制小程序码...');
-              const qrCode = canvas.createImage();
-              qrCode.onload = () => {
-                console.log('小程序码图片加载成功');
-                // 直接绘制小程序码（透明背景）
-                const qrSize = 60;
-                const qrX = 375 - qrSize - 15;
-                const qrY = 600 - qrSize - 15;
-                
-                ctx.drawImage(qrCode, qrX, qrY, qrSize, qrSize);
-                console.log('小程序码绘制完成');
-                
-                // 导出图片
-                this.exportCanvasImage(canvas, resolve, reject);
-              };
-              qrCode.onerror = (err: any) => {
-                console.error('小程序码加载失败:', err);
-                // 即使小程序码加载失败，也导出图片
-                this.exportCanvasImage(canvas, resolve, reject);
-              };
-              qrCode.src = qrCodePath;
-            } else {
-              console.log('没有获取到小程序码，直接导出图片');
-              // 没有小程序码，直接导出
+            try {
+              // 加载并绘制背景图片和文字
+              await this.drawBackgroundImages(canvas, ctx, canvasWidth, canvasHeight);
+              
+              // 绘制文字
+              this.drawCoupletText(ctx);
+              
+              // 绘制小程序码
+              if (qrCodePath) {
+                await this.drawQRCode(canvas, ctx, qrCodePath, canvasWidth, canvasHeight);
+              }
+              
+              // 导出图片
               this.exportCanvasImage(canvas, resolve, reject);
+            } catch (error) {
+              console.error('绘制图片失败:', error);
+              reject(error);
             }
           });
       } catch (error) {
@@ -298,20 +231,168 @@ Page({
     });
   },
 
-  // 绘制圆角矩形
-  drawRoundRect(ctx: any, x: number, y: number, width: number, height: number, radius: number) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-    ctx.fill();
+  // 绘制背景图片
+  drawBackgroundImages(canvas: any, ctx: any, _canvasWidth: number, _canvasHeight: number): Promise<void> {
+    return new Promise((resolve) => {
+      let loadedCount = 0;
+      const totalImages = 3;
+      
+      const checkAllLoaded = () => {
+        loadedCount++;
+        if (loadedCount === totalImages) {
+          resolve();
+        }
+      };
+
+      // Canvas图片尺寸（与页面显示独立）
+      // 调整为更宽、更矮的比例：500x700
+      
+      const screenWidth = 500;
+      
+      // 横批：居中显示，根据top.png原图比例(647x166≈3.9:1)调整
+      // 高度86px，宽度335px
+      const horizontalWidth = 335;
+      const horizontalHeight = 86;
+      const horizontalX = (screenWidth - horizontalWidth) / 2;
+      const horizontalY = 40; // 标题下方
+      
+      // 春联：宽150px，高度530px，gap 60px
+      const coupletWidth = 160;
+      const coupletHeight = 530;
+      const coupletGap = 60;
+      const coupletY = horizontalY + horizontalHeight + 15; // 横批下方15px
+      
+      // 计算春联X位置（两个春联居中）
+      const totalCoupletWidth = coupletWidth * 2 + coupletGap;
+      const coupletStartX = (screenWidth - totalCoupletWidth) / 2;
+      const leftCoupletX = coupletStartX;
+      const rightCoupletX = coupletStartX + coupletWidth + coupletGap;
+      
+      // 加载横批背景（top.png）
+      const topImage = canvas.createImage();
+      topImage.onload = () => {
+        ctx.drawImage(topImage, horizontalX, horizontalY, horizontalWidth, horizontalHeight);
+        checkAllLoaded();
+      };
+      topImage.onerror = () => {
+        console.error('横批背景加载失败');
+        checkAllLoaded();
+      };
+      topImage.src = '/images/top.png';
+
+      // 加载左春联背景（left.png）- 下联
+      const leftImage = canvas.createImage();
+      leftImage.onload = () => {
+        ctx.drawImage(leftImage, leftCoupletX, coupletY, coupletWidth, coupletHeight);
+        checkAllLoaded();
+      };
+      leftImage.onerror = () => {
+        console.error('左春联背景加载失败');
+        checkAllLoaded();
+      };
+      leftImage.src = '/images/left.png';
+
+      // 加载右春联背景（right.png）- 上联
+      const rightImage = canvas.createImage();
+      rightImage.onload = () => {
+        ctx.drawImage(rightImage, rightCoupletX, coupletY, coupletWidth, coupletHeight);
+        checkAllLoaded();
+      };
+      rightImage.onerror = () => {
+        console.error('右春联背景加载失败');
+        checkAllLoaded();
+      };
+      rightImage.src = '/images/right.png';
+    });
+  },
+
+  // 绘制春联文字
+  drawCoupletText(ctx: any) {
+    const screenWidth = 500;
+    
+    // 横批尺寸和位置
+    // horizontalWidth = 335px, 由背景图片决定
+    const horizontalHeight = 86;
+    const horizontalY = 40;
+    
+    // 春联尺寸和位置
+    const coupletWidth = 160;
+    // coupletHeight = 530px
+    const coupletGap = 60;
+    const coupletY = horizontalY + horizontalHeight + 15;
+    
+    const totalCoupletWidth = coupletWidth * 2 + coupletGap;
+    const coupletStartX = (screenWidth - totalCoupletWidth) / 2;
+    const leftCoupletX = coupletStartX;
+    const rightCoupletX = coupletStartX + coupletWidth + coupletGap;
+    
+    // 横批文字（64rpx = 32px, letter-spacing 24rpx = 12px）
+    // 直接在页面宽度上居中，不考虑背景图片位置
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 32px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    const horizontalChars = this.data.horizontal.split('');
+    const letterSpacing = 12;
+    const totalWidth = horizontalChars.reduce((sum, char) => {
+      return sum + ctx.measureText(char).width + letterSpacing;
+    }, -letterSpacing);
+    
+    // 在页面宽度上居中，手动向右偏移8px以修正视觉居中
+    let startX = (screenWidth - totalWidth) / 2 + 15;
+    const horizontalCenterY = horizontalY + horizontalHeight / 2;
+    
+    horizontalChars.forEach(char => {
+      ctx.fillText(char, startX, horizontalCenterY);
+      startX += ctx.measureText(char).width + letterSpacing;
+    });
+
+    // 春联文字（64rpx = 32px, letter-spacing 24rpx = 12px, line-height 1.7）
+    ctx.fillStyle = '#ffd700';
+    ctx.font = 'bold 32px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    const lineHeight = 32 * 1.7; // font-size * line-height
+    const textPaddingTop = 50; // 增加上方padding，让文字起始位置更低
+    
+    // 下联文字（左侧）
+    const lowerChars = this.data.lower.split('');
+    const leftCenterX = leftCoupletX + coupletWidth / 2;
+    const textStartY = coupletY + textPaddingTop;
+    
+    lowerChars.forEach((char, index) => {
+      ctx.fillText(char, leftCenterX, textStartY + index * lineHeight);
+    });
+
+    // 上联文字（右侧）
+    const upperChars = this.data.upper.split('');
+    const rightCenterX = rightCoupletX + coupletWidth / 2;
+    
+    upperChars.forEach((char, index) => {
+      ctx.fillText(char, rightCenterX, textStartY + index * lineHeight);
+    });
+  },
+
+  // 绘制小程序码
+  drawQRCode(canvas: any, ctx: any, qrCodePath: string, canvasWidth: number, canvasHeight: number): Promise<void> {
+    return new Promise((resolve) => {
+      const qrCode = canvas.createImage();
+      qrCode.onload = () => {
+        const qrSize = 60;
+        const qrX = canvasWidth - qrSize - 15;
+        const qrY = canvasHeight - qrSize - 15;
+        
+        ctx.drawImage(qrCode, qrX, qrY, qrSize, qrSize);
+        resolve();
+      };
+      qrCode.onerror = () => {
+        console.error('小程序码加载失败');
+        resolve(); // 即使失败也继续
+      };
+      qrCode.src = qrCodePath;
+    });
   },
 
   // 导出 Canvas 图片
@@ -378,6 +459,22 @@ Page({
     return {
       title: `「${this.data.name}」的2026马年专属春联`,
       path: `/pages/result/result?shared=true&data=${encodeURIComponent(JSON.stringify({
+        name: this.data.name,
+        position: this.data.position,
+        upper: this.data.upper,
+        lower: this.data.lower,
+        horizontal: this.data.horizontal
+      }))}`,
+      imageUrl: '' // 可以设置自定义分享图片
+    };
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    // 无论是自己的还是别人分享的，都分享当前页面的春联
+    return {
+      title: `看看我的马年春联`,
+      query: `shared=true&data=${encodeURIComponent(JSON.stringify({
         name: this.data.name,
         position: this.data.position,
         upper: this.data.upper,
