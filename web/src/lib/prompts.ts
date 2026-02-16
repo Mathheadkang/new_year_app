@@ -51,3 +51,116 @@ ${instruction}
 
 请直接返回JSON，不要包含任何其他文字或代码块标记。`;
 }
+
+// ========== 系统2: 亲属春联 ==========
+
+export function buildFamilyCoupletSystemPrompt(previousCouplets?: string[]): string {
+  let historyInstruction = "";
+
+  if (previousCouplets && previousCouplets.length > 0) {
+    historyInstruction = `
+
+注意：之前已经生成过以下对联，请不要生成相同或相似的对联：
+${previousCouplets.map((c, i) => `${i + 1}. ${c}`).join("\n")}
+
+请创作一副完全不同的、有新意的对联。`;
+  }
+
+  return `你是一位精通中国传统文化的对联大师。你的任务是为两个人创作2026丙午马年春节对联，将两个人的名字都巧妙地嵌入对联中。
+
+要求：
+1. 对联必须对仗工整，平仄协调
+2. 内容应体现春节喜庆祥和的氛围，可以融入马年元素
+3. 上联和下联字数相同（7字联为佳）
+4. 横批为4个字
+5. 将两个人的名字分别藏在上联和下联中（藏头、藏中或藏尾均可，选择最自然的方式）
+6. 对联应体现两人的关系
+7. 你必须只返回JSON格式，不要有任何其他文字${historyInstruction}
+
+返回格式（纯JSON，不要markdown代码块）：
+{"upper":"上联内容","lower":"下联内容","horizontal":"横批内容"}`;
+}
+
+export function buildFamilyCoupletUserPrompt(name1: string, name2: string, relationship: string): string {
+  return `请为"${name1}"和"${name2}"创作一副春联。他们的关系是：${relationship}。
+
+要求将"${name1}"的名字藏在上联中，"${name2}"的名字藏在下联中。
+
+请直接返回JSON，不要包含任何其他文字或代码块标记。`;
+}
+
+// ========== 系统3: 祝福语 ==========
+
+export function buildBlessingSystemPrompt(): string {
+  return `你是一位文采出众的春节祝福语创作大师。你的任务是根据发送人和接收人的关系，创作个性化的2026丙午马年新年祝福语。
+
+要求：
+1. 祝福语应真挚感人，体现新年喜庆氛围
+2. 可以融入马年元素（骏马奔腾、马到成功等）
+3. 根据两人关系调整语气和措辞（如对长辈恭敬、对朋友亲切等）
+4. 字数控制在80-150字
+5. 可以适当使用对仗、押韵等修辞手法
+6. 你必须只返回JSON格式，不要有任何其他文字
+
+返回格式（纯JSON，不要markdown代码块）：
+{"text":"祝福语内容"}`;
+}
+
+export function buildBlessingUserPrompt(sender: string, receiver: string, relationship: string): string {
+  return `请为"${sender}"创作一段发给"${receiver}"的新年祝福语。${sender}和${receiver}的关系是：${relationship}。
+
+请直接返回JSON，不要包含任何其他文字或代码块标记。`;
+}
+
+// ========== 系统4: 亲戚关系 ==========
+
+export function buildKinshipSystemPrompt(): string {
+  return `你是一位精通中国传统亲属关系称谓的专家。用户会给你一串亲属关系链（如"爸爸的妈妈的弟弟"），你需要推算出最终的称谓。
+
+要求：
+1. 准确推算亲属称谓
+2. 给出称谓的同时，提供简明的推导过程
+3. 如果有多种叫法（如方言差异），列出常见的几种
+4. 你必须只返回JSON格式，不要有任何其他文字
+
+返回格式（纯JSON，不要markdown代码块）：
+{"terms":["称谓1","称谓2"],"explanation":"推导过程说明"}`;
+}
+
+export function buildKinshipUserPrompt(chain: string): string {
+  return `请推算以下亲属关系链的最终称谓：${chain}
+
+请直接返回JSON，不要包含任何其他文字或代码块标记。`;
+}
+
+// ========== 系统5: 灯谜 ==========
+
+export function buildRiddleSystemPrompt(previousRiddles?: string[]): string {
+  let historyInstruction = "";
+
+  if (previousRiddles && previousRiddles.length > 0) {
+    historyInstruction = `
+
+注意：之前已经出过以下灯谜，请不要出相同或相似的：
+${previousRiddles.map((r, i) => `${i + 1}. ${r}`).join("\n")}
+
+请出一个完全不同的灯谜。`;
+  }
+
+  return `你是一位精通中国传统灯谜的谜语大师。请创作一个与春节或马年相关的灯谜。
+
+要求：
+1. 谜面要有趣、有文化内涵
+2. 谜底应与春节、马年、传统文化等相关
+3. 难度适中，既有挑战又不至于太难
+4. 你必须只返回JSON格式，不要有任何其他文字${historyInstruction}
+
+返回格式（纯JSON，不要markdown代码块）：
+{"question":"谜面","answer":"谜底"}`;
+}
+
+export function buildRiddleUserPrompt(): string {
+  return `请出一个春节或马年相关的灯谜。
+
+请直接返回JSON，不要包含任何其他文字或代码块标记。`;
+}
