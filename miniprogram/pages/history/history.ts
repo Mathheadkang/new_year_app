@@ -215,5 +215,23 @@ Page({
 
   formatTime(timestamp: number): string {
     return formatTime(timestamp);
+  },
+
+  // 分享给好友（分享主页）
+  onShareAppMessage() {
+    return {
+      title: '2026马年春联生成器',
+      path: '/pages/index/index',
+      imageUrl: '/images/share/share_pic.png'
+    };
+  },
+
+  // 分享到朋友圈（分享主页）
+  onShareTimeline() {
+    return {
+      title: '2026马年春联生成器',
+      query: '',
+      imageUrl: ''
+    };
   }
 })

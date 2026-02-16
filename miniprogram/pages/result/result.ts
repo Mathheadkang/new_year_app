@@ -365,6 +365,16 @@ Page({
 
   // 分享给好友（微信原生分享）
   onShareAppMessage() {
+    // 如果是分享页面，分享主页而不是当前页面
+    if (this.data.isShared) {
+      return {
+        title: '2026马年春联生成器',
+        path: '/pages/index/index',
+        imageUrl: '/images/share/share_pic.png'
+      };
+    }
+    
+    // 正常页面，分享当前春联
     return {
       title: `「${this.data.name}」的2026马年专属春联`,
       path: `/pages/result/result?shared=true&data=${encodeURIComponent(JSON.stringify({
