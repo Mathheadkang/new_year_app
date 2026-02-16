@@ -19,10 +19,15 @@ Page({
     lower: '',
     horizontal: '',
     loading: false,
-    showShare: false
+    showShare: false,
+    isShared: false  // 是否是分享页面
   },
 
   onLoad(options: any) {
+    // 检测是否是分享页面
+    const isShared = options.shared === 'true';
+    this.setData({ isShared });
+
     // 从页面参数获取数据
     if (options.data) {
       try {
@@ -35,8 +40,8 @@ Page({
           horizontal: data.horizontal
         });
         
-        // 只有不是从历史记录打开的才保存到历史
-        if (!options.fromHistory) {
+        // 只有不是分享页面且不是从历史记录打开的才保存到历史
+        if (!isShared && !options.fromHistory) {
           saveToHistory({
             name: data.name,
             position: data.position,
@@ -65,6 +70,11 @@ Page({
       wx.navigateBack({
         delta: delta
       });
+    } else {
+      // 如果是从分享打开的，页面栈只有当前页面，使用reLaunch跳转到首页
+      wx.reLaunch({
+        url: '/pages/index/index'
+      });
     }
   },
 
@@ -77,7 +87,19 @@ Page({
       wx.navigateBack({
         delta: delta
       });
+    } else {
+      // 如果是从分享打开的，页面栈只有当前页面，使用reLaunch跳转到首页
+      wx.reLaunch({
+        url: '/pages/index/index'
+      });
     }
+  },
+
+  // 分享页面：跳转到首页生成春联
+  goToGenerate() {
+    wx.reLaunch({
+      url: '/pages/index/index'
+    });
   },
 
   // 查看历史
@@ -344,8 +366,8 @@ Page({
   // 分享给好友（微信原生分享）
   onShareAppMessage() {
     return {
-      title: `${this.data.name}的2026马年专属春联`,
-      path: `/pages/result/result?data=${encodeURIComponent(JSON.stringify({
+      title: `「${this.data.name}」的2026马年专属春联`,
+      path: `/pages/result/result?shared=true&data=${encodeURIComponent(JSON.stringify({
         name: this.data.name,
         position: this.data.position,
         upper: this.data.upper,

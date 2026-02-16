@@ -165,7 +165,7 @@ async function generateQRCode(page = 'pages/index/index', scene = '') {
       scene: scene || 'home',  // 场景值（最多32个字符）
       page: page,
       check_path: false,       // 不检查页面是否存在
-      env_version: 'trial',    // 'release' 正式版, 'trial' 体验版, 'develop' 开发版
+      env_version: 'release',    // 'release' 正式版, 'trial' 体验版, 'develop' 开发版
       width: 280,
       auto_color: false,       // 不使用默认颜色
       line_color: {"r":196,"g":29,"b":29}, // 红色（与春联主题配合）

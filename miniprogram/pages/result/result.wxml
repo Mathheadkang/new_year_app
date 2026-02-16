@@ -19,21 +19,31 @@
     </view>
   </view>
 
-  <view class="actions">
-    <button class="action-btn" bindtap="goBack">
-      返回修改
-    </button>
-    <button class="action-btn" bindtap="regenerate">
-      重新生成
-    </button>
+  <!-- 正常页面：显示所有操作按钮 -->
+  <view wx:if="{{!isShared}}">
+    <view class="actions">
+      <button class="action-btn" bindtap="goBack">
+        返回修改
+      </button>
+      <button class="action-btn" bindtap="regenerate">
+        重新生成
+      </button>
+    </view>
+
+    <view class="footer">
+      <button class="action-btn" bindtap="goToHistory">
+        查看历史记录
+      </button>
+      <button class="action-btn" bindtap="showShareMenu">
+        分享春联
+      </button>
+    </view>
   </view>
 
-  <view class="footer">
-    <button class="action-btn" bindtap="goToHistory">
-      查看历史记录
-    </button>
-    <button class="action-btn" bindtap="showShareMenu">
-      分享春联
+  <!-- 分享页面：只显示生成按钮 -->
+  <view wx:if="{{isShared}}" class="shared-page">
+    <button class="generate-my-btn" bindtap="goToGenerate">
+      生成我的春联
     </button>
   </view>
 

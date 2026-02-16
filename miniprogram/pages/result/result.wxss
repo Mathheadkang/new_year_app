@@ -103,6 +103,29 @@
   margin-top: 10rpx;
 }
 
+/* 分享页面样式 */
+.shared-page {
+  margin-top: 40rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.generate-my-btn {
+  width: 80%;
+  padding: 28rpx;
+  border-radius: 20rpx;
+  font-size: 36rpx;
+  font-weight: bold;
+  border: none;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff5252 100%);
+  color: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(255, 82, 82, 0.3);
+}
+
+.generate-my-btn::after {
+  border: none;
+}
+
 /* 分享菜单遮罩 */
 .share-menu {
   position: fixed;
